@@ -260,6 +260,97 @@ async function installClaudeHooks(
 }
 
 /**
+ * Sync a set of files into a target dir using a manifest so we only ever
+ * remove entries we previously installed (never clobber the user's own files).
+ * Returns the number of entries installed.
+ */
+function syncWithManifest(opts: {
+    srcDir: string;
+    tgtDir: string;
+    manifestName: string;
+    fileFilter: (name: string) => boolean;
+    silent: boolean;
+    label: string;
+}): number {
+    const { srcDir, tgtDir, manifestName, fileFilter, silent, label } = opts;
+    if (!fs.existsSync(srcDir)) return 0;
+
+    const current = new Set(
+        fs.readdirSync(srcDir, { withFileTypes: true })
+            .filter((e) => (e.isDirectory() ? true : fileFilter(e.name)))
+            .map((e) => e.name),
+    );
+
+    // Remove entries we installed before but no longer ship.
+    const manifestPath = path.join(tgtDir, manifestName);
+    if (fs.existsSync(manifestPath)) {
+        const prev: string[] = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+        for (const name of prev) {
+            if (!current.has(name)) {
+                fs.rmSync(path.join(tgtDir, name), {
+                    recursive: true,
+                    force: true,
+                });
+                if (!silent) console.log(`  🧹 Removed stale ${label} ${name}`);
+            }
+        }
+    }
+
+    // Copy current entries.
+    fs.mkdirSync(tgtDir, { recursive: true });
+    for (const name of current) {
+        copyRecursive(path.join(srcDir, name), path.join(tgtDir, name));
+    }
+
+    fs.writeFileSync(manifestPath, JSON.stringify([...current], null, 2));
+    return current.size;
+}
+
+/**
+ * Install Codex surfaces:
+ *   - Custom subagents (TOML)   -> <codexRoot>/agents/*.toml
+ *   - Shared agentskills tree    -> <agentsRoot>/skills/<name>/SKILL.md
+ *     (includes one ai-eng-<cmd> skill per command; Codex has no commands)
+ */
+function installCodex(
+    codexRoot: string,
+    agentsRoot: string,
+    silent = false,
+): void {
+    const distCodexAgents = path.join(packageRoot, "dist", ".codex", "agents");
+    const distSharedSkills = path.join(
+        packageRoot,
+        "dist",
+        ".agents",
+        "skills",
+    );
+
+    const agentCount = syncWithManifest({
+        srcDir: distCodexAgents,
+        tgtDir: path.join(codexRoot, "agents"),
+        manifestName: ".ai-eng-manifest.json",
+        fileFilter: (n) => n.endsWith(".toml"),
+        silent,
+        label: "codex agent",
+    });
+    if (!silent && agentCount > 0) {
+        console.log(`  ✓ codex/agents/ (${agentCount} agents)`);
+    }
+
+    const skillCount = syncWithManifest({
+        srcDir: distSharedSkills,
+        tgtDir: path.join(agentsRoot, "skills"),
+        manifestName: ".ai-eng-manifest.json",
+        fileFilter: () => true,
+        silent,
+        label: "shared skill",
+    });
+    if (!silent && skillCount > 0) {
+        console.log(`  ✓ .agents/skills/ (${skillCount} skills)`);
+    }
+}
+
+/**
  * Install AI Engineering System files.
  *
  * dist/.opencode is built with plural-first surfaces (commands, agents,
@@ -279,6 +370,8 @@ function countFilesRecursive(dir: string): number {
 async function install(
     targetDir: string,
     claudeRoot: string,
+    codexRoot: string,
+    agentsRoot: string,
     silent = false,
 ): Promise<void> {
     if (!silent) {
@@ -371,6 +464,9 @@ async function install(
     // Install Claude Code hooks (global ~/.claude/ or project root)
     await installClaudeHooks(claudeRoot, silent);
 
+    // Install Codex subagents (TOML) + shared agentskills tree
+    installCodex(codexRoot, agentsRoot, silent);
+
     if (!silent) {
         console.log("\n✅ Installation complete!");
         console.log(`   Namespace: ${NAMESPACE_PREFIX}`);
@@ -395,14 +491,20 @@ async function main(): Promise<void> {
 
     let openCodeTarget: string;
     let claudeRoot: string;
+    let codexRoot: string;
+    let agentsRoot: string;
 
     if (isLocal) {
         openCodeTarget = path.join(process.cwd(), ".opencode");
         claudeRoot = process.cwd();
+        codexRoot = path.join(process.cwd(), ".codex");
+        agentsRoot = path.join(process.cwd(), ".agents");
     } else {
         // Global library (default)
         openCodeTarget = path.join(homeDir, ".config", "opencode");
         claudeRoot = homeDir; // ~/.claude/hooks/
+        codexRoot = path.join(homeDir, ".codex");
+        agentsRoot = path.join(homeDir, ".agents");
     }
 
     if (!silent) {
@@ -413,9 +515,11 @@ async function main(): Promise<void> {
         console.log(
             `   Claude   -> ${path.join(claudeRoot, ".claude", "hooks")}`,
         );
+        console.log(`   Codex    -> ${path.join(codexRoot, "agents")}`);
+        console.log(`   Skills   -> ${path.join(agentsRoot, "skills")}`);
     }
 
-    await install(openCodeTarget, claudeRoot, silent);
+    await install(openCodeTarget, claudeRoot, codexRoot, agentsRoot, silent);
 }
 
 main().catch((error) => {

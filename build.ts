@@ -64,6 +64,51 @@ const DIST_OPENCODE_DIR = join(DIST_DIR, ".opencode");
 const DIST_PI_DIR = join(DIST_DIR, ".pi");
 const DIST_CURSOR_DIR = join(DIST_DIR, ".cursor-plugin");
 const DIST_GEMINI_DIR = join(DIST_DIR, ".gemini");
+const DIST_CODEX_DIR = join(DIST_DIR, ".codex");
+const DIST_AGENTS_DIR = join(DIST_DIR, ".agents");
+
+/**
+ * Codex subagents excluded from the curated core set: the claude-* router
+ * agents are Claude-model-specific and do not translate to a Codex TOML
+ * subagent. Everything else is harness-neutral.
+ */
+const CODEX_EXCLUDED_AGENTS = new Set([
+    "claude-conductor",
+    "claude-debugger-agent",
+    "claude-lookup-agent",
+    "claude-planner-agent",
+    "claude-refactor-agent",
+    "claude-work-agent",
+]);
+
+/**
+ * Codex agents that should run read-only: reviewers, auditors, and
+ * read-only lookup/analysis agents. Implementers inherit the parent sandbox.
+ */
+const CODEX_READ_ONLY_AGENTS = new Set([
+    "code-reviewer",
+    "frontend-reviewer",
+    "security-scanner",
+    "performance-engineer",
+    "review",
+    "repo-audit-review",
+    "compatibility-scan-review",
+    "docs-reliability-review",
+    "startup-review",
+    "validation-review",
+    "seo-specialist",
+    "architect-advisor",
+    "aws-architect",
+    "database-optimizer",
+    "cost-optimizer",
+    "monitoring-expert",
+    "ci-watcher",
+    "prompt-optimizer",
+    "text-cleaner",
+    "documentation-specialist",
+    "docs-writer",
+    "agents-memory-updater",
+]);
 const RULES_DIR = join(ROOT, "rules");
 const CURSOR_RULES_DIR = join(RULES_DIR, "cursor");
 const COOKING_HOOKS_DIR = join(ROOT, "hooks", "cooking");
@@ -849,6 +894,138 @@ async function buildGemini(): Promise<void> {
 
     await validateGeminiOutput(DIST_GEMINI_DIR);
 }
+
+/**
+ * Escape a string for inclusion in a TOML basic (double-quoted) string.
+ */
+function tomlEscape(value: string): string {
+    return value
+        .replace(/\\/g, "\\\\")
+        .replace(/"/g, '\\"')
+        .replace(/\n/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+/**
+ * Render one Codex custom-agent TOML file from a canonical agent markdown file.
+ * Codex requires name, description, and developer_instructions.
+ */
+function renderCodexAgentToml(
+    markdown: string,
+    filePathForErrors: string,
+): { name: string; toml: string } {
+    const parsed = parseFrontmatterStrict(markdown, filePathForErrors);
+    const meta = parsed.meta;
+    const name = String(meta.name ?? "").trim();
+    const description = String(meta.description ?? "").trim();
+    if (!name) throw new Error(`Codex agent missing name: ${filePathForErrors}`);
+    if (!description)
+        throw new Error(
+            `Codex agent missing description: ${filePathForErrors}`,
+        );
+
+    const instructions = parsed.body.trim();
+    if (!instructions)
+        throw new Error(
+            `Codex agent missing instructions body: ${filePathForErrors}`,
+        );
+
+    const lines: string[] = [
+        `name = "${tomlEscape(name)}"`,
+        `description = "${tomlEscape(description)}"`,
+    ];
+    if (CODEX_READ_ONLY_AGENTS.has(name)) {
+        lines.push(`sandbox_mode = "read-only"`);
+    }
+    lines.push(`developer_instructions = """`);
+    lines.push(instructions);
+    lines.push(`"""`);
+    return { name, toml: lines.join("\n") + "\n" };
+}
+
+/**
+ * Build the Codex platform surface:
+ *   dist/.codex/agents (TOML)      - curated core agents (claude-* excluded)
+ *   dist/.agents/skills            - shared agentskills tree (all skills)
+ *   dist/.agents/skills/ai-eng-*   - one skill per command (Codex has no
+ *                                    command surface; skills replace them)
+ */
+async function buildCodex(): Promise<void> {
+    await rm(DIST_CODEX_DIR, { recursive: true, force: true });
+    await rm(DIST_AGENTS_DIR, { recursive: true, force: true });
+
+    const codexAgentsDir = join(DIST_CODEX_DIR, "agents");
+    const sharedSkillsDir = join(DIST_AGENTS_DIR, "skills");
+    await mkdir(codexAgentsDir, { recursive: true });
+    await mkdir(sharedSkillsDir, { recursive: true });
+
+    // 1. Curated core agents -> TOML
+    const agentFiles = await getMarkdownFiles(join(CONTENT_DIR, "agents"));
+    let agentCount = 0;
+    for (const src of agentFiles) {
+        const base = basename(src, ".md");
+        if (CODEX_EXCLUDED_AGENTS.has(base)) continue;
+        const content = await readFile(src, "utf-8");
+        const { name, toml } = renderCodexAgentToml(content, src);
+        await writeFile(join(codexAgentsDir, `${name}.toml`), toml);
+        agentCount++;
+    }
+
+    // 2. Shared agentskills tree (Codex user scope + other harnesses)
+    await copySkillsPreservePath(SKILLS_DIR, sharedSkillsDir);
+
+    // 3. One skill per command (skills replace commands on Codex)
+    const commandFiles = await getCachedCommandFiles();
+    let commandCount = 0;
+    for (const src of commandFiles) {
+        const base = basename(src, ".md");
+        const content = await readFile(src, "utf-8");
+        const parsed = parseFrontmatterStrict(content, src);
+        const description = String(parsed.meta.description ?? "").trim();
+        const skillName = `ai-eng-${base}`;
+        const skillDir = join(sharedSkillsDir, skillName);
+        await mkdir(skillDir, { recursive: true });
+        const skillMd = [
+            "---",
+            `name: ${skillName}`,
+            `description: ${description || `Run the ai-eng/${base} workflow`}`,
+            "---",
+            "",
+            parsed.body.trim(),
+            "",
+        ].join("\n");
+        await writeFile(join(skillDir, "SKILL.md"), skillMd);
+        commandCount++;
+    }
+
+    await validateCodexOutput(agentCount, commandCount);
+}
+
+async function validateCodexOutput(
+    agentCount: number,
+    commandCount: number,
+): Promise<void> {
+    const errors: string[] = [];
+    const codexAgentsDir = join(DIST_CODEX_DIR, "agents");
+    if (!existsSync(codexAgentsDir)) {
+        errors.push("Codex output missing .codex/agents/");
+    } else if (agentCount === 0) {
+        errors.push("Codex output has no agents");
+    }
+    const sharedSkillsDir = join(DIST_AGENTS_DIR, "skills");
+    if (!existsSync(sharedSkillsDir)) {
+        errors.push("Codex output missing .agents/skills/");
+    } else {
+        const skills = await discoverSkills(sharedSkillsDir);
+        if (skills.length === 0) errors.push("Codex output has no skills");
+    }
+    if (commandCount === 0) errors.push("Codex output has no command skills");
+    if (errors.length > 0) {
+        throw new Error(`Codex build validation failed:\n${errors.join("\n")}`);
+    }
+}
+
 
 async function validateCursorOutput(cursorRoot: string): Promise<void> {
     const errors: string[] = [];
@@ -2296,6 +2473,7 @@ async function buildAll(): Promise<void> {
         buildPi(),
         buildCursor(),
         buildGemini(),
+        buildCodex(),
     ]);
     await copySkillsToDist();
 

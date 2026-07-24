@@ -123,6 +123,58 @@ async function installClaudeHooks(targetDir, silent = false) {
     console.log("    \uD83D\uDEAB Use '!' prefix to skip optimization for specific prompts");
   }
 }
+function syncWithManifest(opts) {
+  const { srcDir, tgtDir, manifestName, fileFilter, silent, label } = opts;
+  if (!fs.existsSync(srcDir))
+    return 0;
+  const current = new Set(fs.readdirSync(srcDir, { withFileTypes: true }).filter((e) => e.isDirectory() ? true : fileFilter(e.name)).map((e) => e.name));
+  const manifestPath = path.join(tgtDir, manifestName);
+  if (fs.existsSync(manifestPath)) {
+    const prev = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+    for (const name of prev) {
+      if (!current.has(name)) {
+        fs.rmSync(path.join(tgtDir, name), {
+          recursive: true,
+          force: true
+        });
+        if (!silent)
+          console.log(`  \uD83E\uDDF9 Removed stale ${label} ${name}`);
+      }
+    }
+  }
+  fs.mkdirSync(tgtDir, { recursive: true });
+  for (const name of current) {
+    copyRecursive(path.join(srcDir, name), path.join(tgtDir, name));
+  }
+  fs.writeFileSync(manifestPath, JSON.stringify([...current], null, 2));
+  return current.size;
+}
+function installCodex(codexRoot, agentsRoot, silent = false) {
+  const distCodexAgents = path.join(packageRoot, "dist", ".codex", "agents");
+  const distSharedSkills = path.join(packageRoot, "dist", ".agents", "skills");
+  const agentCount = syncWithManifest({
+    srcDir: distCodexAgents,
+    tgtDir: path.join(codexRoot, "agents"),
+    manifestName: ".ai-eng-manifest.json",
+    fileFilter: (n) => n.endsWith(".toml"),
+    silent,
+    label: "codex agent"
+  });
+  if (!silent && agentCount > 0) {
+    console.log(`  ✓ codex/agents/ (${agentCount} agents)`);
+  }
+  const skillCount = syncWithManifest({
+    srcDir: distSharedSkills,
+    tgtDir: path.join(agentsRoot, "skills"),
+    manifestName: ".ai-eng-manifest.json",
+    fileFilter: () => true,
+    silent,
+    label: "shared skill"
+  });
+  if (!silent && skillCount > 0) {
+    console.log(`  ✓ .agents/skills/ (${skillCount} skills)`);
+  }
+}
 function countFilesRecursive(dir) {
   let n = 0;
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -134,7 +186,7 @@ function countFilesRecursive(dir) {
   }
   return n;
 }
-async function install(targetDir, claudeRoot, silent = false) {
+async function install(targetDir, claudeRoot, codexRoot, agentsRoot, silent = false) {
   if (!silent) {
     console.log(`\uD83D\uDD27 Installing AI Engineering System to ${targetDir}`);
   }
@@ -198,6 +250,7 @@ async function install(targetDir, claudeRoot, silent = false) {
       console.log("  \uD83E\uDDF9 Removed legacy skill/ (skills live in skills/)");
   }
   await installClaudeHooks(claudeRoot, silent);
+  installCodex(codexRoot, agentsRoot, silent);
   if (!silent) {
     console.log(`
 ✅ Installation complete!`);
@@ -211,19 +264,27 @@ async function main() {
   const homeDir = process.env.HOME || process.env.USERPROFILE || "";
   let openCodeTarget;
   let claudeRoot;
+  let codexRoot;
+  let agentsRoot;
   if (isLocal) {
     openCodeTarget = path.join(process.cwd(), ".opencode");
     claudeRoot = process.cwd();
+    codexRoot = path.join(process.cwd(), ".codex");
+    agentsRoot = path.join(process.cwd(), ".agents");
   } else {
     openCodeTarget = path.join(homeDir, ".config", "opencode");
     claudeRoot = homeDir;
+    codexRoot = path.join(homeDir, ".codex");
+    agentsRoot = path.join(homeDir, ".agents");
   }
   if (!silent) {
     console.log(`\uD83D\uDD27 Installing AI Engineering System (${isLocal ? "project-local" : "global"})`);
     console.log(`   OpenCode -> ${openCodeTarget}`);
     console.log(`   Claude   -> ${path.join(claudeRoot, ".claude", "hooks")}`);
+    console.log(`   Codex    -> ${path.join(codexRoot, "agents")}`);
+    console.log(`   Skills   -> ${path.join(agentsRoot, "skills")}`);
   }
-  await install(openCodeTarget, claudeRoot, silent);
+  await install(openCodeTarget, claudeRoot, codexRoot, agentsRoot, silent);
 }
 main().catch((error) => {
   const message = error instanceof Error ? error.message : String(error);
