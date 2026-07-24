@@ -2243,7 +2243,7 @@ const buildCache: BuildCache = {
 async function getPackageJson(): Promise<RootPackageJson> {
     if (!buildCache.packageJson) {
         buildCache.packageJson = JSON.parse(
-            await readFile(join(ROOT, "package.json"), "utf-8"),
+            await readFile(join(ROOT, "packages", "cli", "package.json"), "utf-8"),
         );
     }
     return buildCache.packageJson!;

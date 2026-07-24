@@ -1,5 +1,5 @@
 ---
-name: deep-review
+name: ai-eng/deep-review
 description: Run all four review axes in parallel — code quality, security, architecture, and performance — each in its own isolated context. The most thorough review available.
 agent: review
 version: 1.0.0

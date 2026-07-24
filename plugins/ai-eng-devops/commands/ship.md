@@ -1,5 +1,5 @@
 ---
-name: ship
+name: ai-eng/ship
 description: Deploy to production with confidence
 agent: build
 version: 1.0.0

@@ -1,5 +1,5 @@
 ---
-name: dynamic-task
+name: ai-eng/dynamic-task
 description: >
   Route a task to the right Anthropic-powered subagent. The conductor
   assesses complexity and intent, then dispatches to LookupAgent (Haiku),
