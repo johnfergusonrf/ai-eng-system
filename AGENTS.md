@@ -213,7 +213,7 @@ The table below highlights the most important lifecycle and alignment skills. Th
 | /ai-eng/learning-dismiss | Dismiss active learning recommendation | build |
 | /ai-eng/learning-snooze | Snooze active learning recommendation | build |
 
-See `docs/reference/commands.md` for the full 28-command inventory.
+See `docs/reference/commands.md` for the full 29-command inventory.
 
 ### Lifecycle Mapping
 
@@ -340,9 +340,19 @@ bun run clean
 bun run validate
 
 # Installation
-bun run install:global  # Global OpenCode install
-bun run install:local    # Local OpenCode install
+bun run install:global  # Global install (all supported harnesses)
+bun run install:local    # Local install into the current project
 ```
+
+### Install targets
+
+| Harness | Global target | What is installed |
+|---------|---------------|-------------------|
+| OpenCode | `~/.config/opencode/` | commands, agents, skills, tools (`*.md`) |
+| Claude Code | `~/.claude/hooks/` + marketplace | hooks; agents/commands/skills ship via the `ai-eng-marketplace` plugin |
+| Codex | `~/.codex/agents/` + `~/.agents/skills/` | curated core agents as `*.toml` subagents; skills + one `ai-eng-<cmd>` skill per command (Codex has no command surface) |
+
+`install:local` mirrors the same layout under the project root (`.opencode/`, `.claude/hooks/`, `.codex/agents/`, `.agents/skills/`).
 
 ## Task Management with TODO.md
 

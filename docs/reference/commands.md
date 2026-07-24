@@ -1,6 +1,6 @@
 # Commands Reference
 
-Full inventory of the 28 shipped commands. All commands live under the `ai-eng/` namespace; bare shorthand commands (`/spec`, `/build`, `/ship`, `/verify`, etc.) were retired — use the prefixed form.
+Full inventory of the 29 shipped commands. All commands live under the `ai-eng/` namespace; bare shorthand commands (`/spec`, `/build`, `/ship`, `/verify`, etc.) were retired — use the prefixed form.
 
 Canonical command definitions live in `content/commands/`, mirrored to `.claude/commands/` and `.opencode/commands/ai-eng/` by the build.
 
