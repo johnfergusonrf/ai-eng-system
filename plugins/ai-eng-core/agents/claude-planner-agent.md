@@ -4,6 +4,7 @@ description: >
   High-reasoning agent for architecture, planning, system design, and complex
   multi-step problems. Uses claude-opus-4-8.
 mode: subagent
+harness: claude
 model: claude-opus-4-8
 tools:
   - Read

@@ -4,6 +4,7 @@ description: >
   Agent for code restructuring, design pattern application, and architecture
   improvement. Uses claude-opus-4-8.
 mode: subagent
+harness: claude
 model: claude-opus-4-8
 tools:
   - Read

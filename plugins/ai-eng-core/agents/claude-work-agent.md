@@ -4,6 +4,7 @@ description: >
   Balanced agent for coding, implementation, bug fixes, and standard development
   tasks. Uses claude-sonnet-4-6.
 mode: subagent
+harness: claude
 model: claude-sonnet-4-6
 tools:
   - Read
