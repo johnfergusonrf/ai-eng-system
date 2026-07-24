@@ -68,20 +68,6 @@ const DIST_CODEX_DIR = join(DIST_DIR, ".codex");
 const DIST_AGENTS_DIR = join(DIST_DIR, ".agents");
 
 /**
- * Codex subagents excluded from the curated core set: the claude-* router
- * agents are Claude-model-specific and do not translate to a Codex TOML
- * subagent. Everything else is harness-neutral.
- */
-const CODEX_EXCLUDED_AGENTS = new Set([
-    "claude-conductor",
-    "claude-debugger-agent",
-    "claude-lookup-agent",
-    "claude-planner-agent",
-    "claude-refactor-agent",
-    "claude-work-agent",
-]);
-
-/**
  * Codex agents that should run read-only: reviewers, auditors, and
  * read-only lookup/analysis agents. Implementers inherit the parent sandbox.
  */
@@ -690,6 +676,7 @@ async function buildOpenCode(): Promise<void> {
         const agentFiles = await getCachedAgentFiles();
         for (const src of agentFiles) {
             const content = await readFile(src, "utf-8");
+            if (isClaudeOnlyAgent(content, src)) continue;
             const transformed = transformAgentMarkdownForOpenCode(content, src);
 
             await writeFile(
@@ -833,6 +820,7 @@ async function buildCursor(): Promise<void> {
     );
     for (const src of cursorAgentFiles) {
         const content = await readFile(src, "utf-8");
+        if (isClaudeOnlyAgent(content, src)) continue;
         const transformed = transformAgentMarkdownForCursor(content, src);
         await writeFile(join(cursorAgentsDir, basename(src)), transformed);
     }
@@ -908,6 +896,19 @@ function tomlEscape(value: string): string {
 }
 
 /**
+ * Returns true when an agent is Claude-specific (frontmatter `harness: claude`).
+ * Claude-specific agents hardcode Anthropic models and ship only to the Claude
+ * marketplace / .claude surface — never to OpenCode, Cursor, Codex, or Gemini.
+ */
+function isClaudeOnlyAgent(
+    markdown: string,
+    filePathForErrors: string,
+): boolean {
+    const parsed = parseFrontmatterStrict(markdown, filePathForErrors);
+    return parsed.meta.harness === "claude";
+}
+
+/**
  * Render one Codex custom-agent TOML file from a canonical agent markdown file.
  * Codex requires name, description, and developer_instructions.
  */
@@ -960,13 +961,12 @@ async function buildCodex(): Promise<void> {
     await mkdir(codexAgentsDir, { recursive: true });
     await mkdir(sharedSkillsDir, { recursive: true });
 
-    // 1. Curated core agents -> TOML
+    // 1. Curated core agents -> TOML (Claude-only agents excluded)
     const agentFiles = await getMarkdownFiles(join(CONTENT_DIR, "agents"));
     let agentCount = 0;
     for (const src of agentFiles) {
-        const base = basename(src, ".md");
-        if (CODEX_EXCLUDED_AGENTS.has(base)) continue;
         const content = await readFile(src, "utf-8");
+        if (isClaudeOnlyAgent(content, src)) continue;
         const { name, toml } = renderCodexAgentToml(content, src);
         await writeFile(join(codexAgentsDir, `${name}.toml`), toml);
         agentCount++;

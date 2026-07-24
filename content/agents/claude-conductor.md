@@ -5,6 +5,7 @@ description: >
   and routes to the appropriate Anthropic-powered subagent. Supports
   single-step dispatch and multi-step chaining.
 mode: subagent
+harness: claude
 model: claude-sonnet-4-6
 tools:
   read: true

@@ -4,6 +4,7 @@ description: >
   Agent for systematic debugging, error tracing, and root-cause analysis.
   Uses claude-sonnet-4-6.
 mode: subagent
+harness: claude
 model: claude-sonnet-4-6
 tools:
   read: true

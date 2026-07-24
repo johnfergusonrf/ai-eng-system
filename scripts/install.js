@@ -186,6 +186,40 @@ function countFilesRecursive(dir) {
   }
   return n;
 }
+function getClaudeOnlyAgentNames() {
+  const names = new Set;
+  const contentAgents = path.join(packageRoot, "content", "agents");
+  if (!fs.existsSync(contentAgents))
+    return names;
+  for (const entry of fs.readdirSync(contentAgents, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith(".md"))
+      continue;
+    const text = fs.readFileSync(path.join(contentAgents, entry.name), "utf-8");
+    const fm = text.match(/^---\n([\s\S]*?)\n---/);
+    if (fm && /^harness:\s*claude\s*$/m.test(fm[1])) {
+      names.add(entry.name);
+    }
+  }
+  return names;
+}
+function removeClaudeOnlyAgentsFromOpenCode(targetDir, silent) {
+  const claudeOnly = getClaudeOnlyAgentNames();
+  if (claudeOnly.size === 0)
+    return;
+  for (const surface of ["agent", "agents"]) {
+    const dir = path.join(targetDir, surface);
+    if (!fs.existsSync(dir))
+      continue;
+    for (const name of claudeOnly) {
+      const fp = path.join(dir, name);
+      if (fs.existsSync(fp)) {
+        fs.rmSync(fp, { force: true });
+        if (!silent)
+          console.log(`  \uD83E\uDDF9 Removed Claude-only agent ${surface}/${name}`);
+      }
+    }
+  }
+}
 async function install(targetDir, claudeRoot, codexRoot, agentsRoot, silent = false) {
   if (!silent) {
     console.log(`\uD83D\uDD27 Installing AI Engineering System to ${targetDir}`);
@@ -249,6 +283,7 @@ async function install(targetDir, claudeRoot, codexRoot, agentsRoot, silent = fa
     if (!silent)
       console.log("  \uD83E\uDDF9 Removed legacy skill/ (skills live in skills/)");
   }
+  removeClaudeOnlyAgentsFromOpenCode(targetDir, silent);
   await installClaudeHooks(claudeRoot, silent);
   installCodex(codexRoot, agentsRoot, silent);
   if (!silent) {

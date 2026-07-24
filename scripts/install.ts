@@ -367,6 +367,58 @@ function countFilesRecursive(dir: string): number {
     return n;
 }
 
+/**
+ * Basenames of catalog agents marked `harness: claude` (Claude-marketplace-only).
+ * Read from content/agents/ when installing from the repo. Returns an empty set
+ * when the catalog is unavailable (e.g. npm package) — in that case the dist
+ * never shipped them, so there is nothing to clean.
+ */
+function getClaudeOnlyAgentNames(): Set<string> {
+    const names = new Set<string>();
+    const contentAgents = path.join(packageRoot, "content", "agents");
+    if (!fs.existsSync(contentAgents)) return names;
+    for (const entry of fs.readdirSync(contentAgents, { withFileTypes: true })) {
+        if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
+        const text = fs.readFileSync(
+            path.join(contentAgents, entry.name),
+            "utf-8",
+        );
+        const fm = text.match(/^---\n([\s\S]*?)\n---/);
+        if (fm && /^harness:\s*claude\s*$/m.test(fm[1])) {
+            names.add(entry.name);
+        }
+    }
+    return names;
+}
+
+/**
+ * Remove Claude-only agents from the OpenCode agent surfaces. These ship only
+ * to the Claude marketplace; any copy under OpenCode is a stale leftover from
+ * before the harness split. Only repo-owned basenames are removed — a user's
+ * own agents are never touched.
+ */
+function removeClaudeOnlyAgentsFromOpenCode(
+    targetDir: string,
+    silent: boolean,
+): void {
+    const claudeOnly = getClaudeOnlyAgentNames();
+    if (claudeOnly.size === 0) return;
+    for (const surface of ["agent", "agents"]) {
+        const dir = path.join(targetDir, surface);
+        if (!fs.existsSync(dir)) continue;
+        for (const name of claudeOnly) {
+            const fp = path.join(dir, name);
+            if (fs.existsSync(fp)) {
+                fs.rmSync(fp, { force: true });
+                if (!silent)
+                    console.log(
+                        `  🧹 Removed Claude-only agent ${surface}/${name}`,
+                    );
+            }
+        }
+    }
+}
+
 async function install(
     targetDir: string,
     claudeRoot: string,
@@ -460,6 +512,9 @@ async function install(
         if (!silent)
             console.log("  🧹 Removed legacy skill/ (skills live in skills/)");
     }
+
+    // Remove Claude-only agents (marketplace-only since the harness split).
+    removeClaudeOnlyAgentsFromOpenCode(targetDir, silent);
 
     // Install Claude Code hooks (global ~/.claude/ or project root)
     await installClaudeHooks(claudeRoot, silent);
