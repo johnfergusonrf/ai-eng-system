@@ -49,9 +49,6 @@ The agent definitions in `.opencode/agent/ai-eng/` can be used as Copilot Chat s
 | Agent | Use Case |
 |-------|----------|
 | `code-reviewer` | Code quality review |
-| `typescript-reviewer` | TypeScript-specific review |
-| `python-reviewer` | Python-specific review |
-| `go-reviewer` | Go-specific review |
 | `security-scanner` | Security vulnerability detection |
 | `performance-engineer` | Performance optimization |
 | `test-generator` | Test suite generation |

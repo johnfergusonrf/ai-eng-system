@@ -1,0 +1,38 @@
+{
+  "skill_name": "run-learning-retrospective",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Run a learning retrospective: my plan was to learn Go in 6 weeks; I'm at week 4 and stuck on concurrency patterns.",
+      "expected_output": "A structured retrospective evaluating progress against the plan, identifying blockers, and adjusting the remaining plan.",
+      "assertions": [
+        "The output compares actual progress to the plan",
+        "The blocker is named and analyzed",
+        "The output proposes concrete plan adjustments"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Let's do a retro on my learning.",
+      "expected_output": "The skill asks what the learning goal and plan were before evaluating progress.",
+      "assertions": [
+        "The output requests the original goal/plan",
+        "The output does not fabricate progress data",
+        "The output keeps the retrospective structure"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Retrospective for a 3-month team upskilling program where 2 of 5 members hit all milestones, 2 are behind, and 1 dropped out.",
+      "expected_output": "A team-level retrospective distinguishing individual vs systemic blockers, with adjusted plan options.",
+      "assertions": [
+        "The output separates individual from systemic causes",
+        "The dropout is addressed as a signal, not ignored",
+        "The output proposes realistic remediation for the remaining members"
+      ]
+    }
+  ]
+}

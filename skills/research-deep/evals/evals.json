@@ -1,0 +1,38 @@
+{
+  "skill_name": "research-deep",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the research-deep skill: do a deep dive on how SQLite handles concurrent writers.",
+      "expected_output": "A multi-source research synthesis with confidence-rated claims and cited sources.",
+      "assertions": [
+        "The output synthesizes multiple sources rather than one",
+        "Claims carry confidence ratings or equivalent qualifiers",
+        "Sources are cited"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Research deeply whether microservices are worth it.",
+      "expected_output": "The skill narrows the question (context, scale, team size) or explicitly frames the scope before researching.",
+      "assertions": [
+        "The output scopes an otherwise unanswerable question",
+        "The output presents multiple perspectives with evidence",
+        "The output avoids a one-sided verdict without support"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Deep research: compare the CAP-theorem tradeoffs of Cassandra, CockroachDB, and DynamoDB for a multi-region fintech workload, including sources that disagree.",
+      "expected_output": "A structured comparison that surfaces source disagreements and rates confidence per claim.",
+      "assertions": [
+        "The output compares all three systems on stated criteria",
+        "Disagreements between sources are surfaced, not smoothed over",
+        "The workload context (multi-region, fintech) shapes the analysis"
+      ]
+    }
+  ]
+}

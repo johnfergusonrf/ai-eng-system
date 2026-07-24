@@ -61,15 +61,14 @@ Route tasks to the most specific agent available:
 | Security review | `security-scanner` | `code-reviewer` |
 | Performance review | `performance-engineer` | `code-reviewer` |
 | Code quality review | `code-reviewer` | `full-stack-developer` |
-| Test generation | `test-generator` | `tdd-guide` |
-| Build error fix | `build-error-resolver` | `full-stack-developer` |
-| E2E testing | `e2e-runner` | `test-generator` |
-| Documentation lookup | `docs-lookup` | `documentation-specialist` |
+| Test generation | `test-generator` | `full-stack-developer` |
+| Build error fix | `full-stack-developer` | `claude-debugger-agent` |
+| E2E testing | `test-generator` | `full-stack-developer` |
+| Documentation lookup | `documentation-specialist` | `claude-lookup-agent` |
 | Deployment | `deployment-engineer` | `full-stack-developer` |
 | Cost optimization | `cost-optimizer` | `infrastructure-builder` |
 | Monitoring setup | `monitoring-expert` | `deployment-engineer` |
-| Planning | `planner` | `architect-advisor` |
-| Harness tuning | `harness-optimizer` | `full-stack-developer` |
+| Planning | `architect-advisor` | `claude-planner-agent` |
 
 ### Result Merge
 

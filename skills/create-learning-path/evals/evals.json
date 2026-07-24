@@ -1,0 +1,38 @@
+{
+  "skill_name": "create-learning-path",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the create-learning-path skill: I want to learn Rust over the next 8 weeks, starting from TypeScript experience.",
+      "expected_output": "A personalized learning roadmap with milestones, practice checkpoints, and week-by-week structure.",
+      "assertions": [
+        "The output contains sequenced milestones",
+        "The output includes practice checkpoints or exercises",
+        "The output accounts for the learner's stated starting point"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "I want to get better at distributed systems. Build me a learning path.",
+      "expected_output": "The skill asks clarifying questions (timeline, current level, goal) or makes bounded, stated assumptions before producing the roadmap.",
+      "assertions": [
+        "The output does not assume a specific timeline without stating it",
+        "The output scopes 'distributed systems' into concrete topics",
+        "The output is actionable rather than a generic book list"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Create a learning path for a team of 5 backend engineers who need to become proficient in Kubernetes operations within one quarter while shipping their normal roadmap.",
+      "expected_output": "A team-level learning path that balances part-time learning with delivery, with shared milestones and individual checkpoints.",
+      "assertions": [
+        "The output addresses the part-time constraint explicitly",
+        "The output provides measurable checkpoints",
+        "The output acknowledges tradeoffs between learning and delivery"
+      ]
+    }
+  ]
+}

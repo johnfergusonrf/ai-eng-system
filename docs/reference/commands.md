@@ -1,6 +1,8 @@
 # Commands Reference
 
-Commands shipped under the `ai-eng/` namespace, plus lifecycle shorthand entrypoints.
+Full inventory of the 28 shipped commands. All commands live under the `ai-eng/` namespace; bare shorthand commands (`/spec`, `/build`, `/ship`, `/verify`, etc.) were retired — use the prefixed form.
+
+Canonical command definitions live in `content/commands/`, mirrored to `.claude/commands/` and `.opencode/commands/ai-eng/` by the build.
 
 ## Spec-Driven Workflow
 
@@ -8,19 +10,10 @@ Commands shipped under the `ai-eng/` namespace, plus lifecycle shorthand entrypo
 - `/ai-eng/spec` - feature/spec generation
 - `/ai-eng/plan` - implementation planning
 - `/ai-eng/work` - guided execution with quality gates
-- `/verify` - lint, typecheck, test, build verification loop
-- `/ai-eng/review` - multi-agent review
+- `/ai-eng/verify` - lint, typecheck, test, build verification loop
+- `/ai-eng/review` - multi-perspective code review
+- `/ai-eng/deep-review` - all four review axes in parallel (most thorough)
 - `/ai-eng/ralph-wiggum` - iterative full-cycle workflow
-
-## Lifecycle Shorthand
-
-| Shorthand | Canonical Command |
-|-------|-------------------|
-| `/spec` | `/ai-eng/spec` |
-| `/build` | `/ai-eng/work` |
-| `/verify` | lint, typecheck, test, build loop |
-
-`/ai-eng/plan` and `/ai-eng/review` are direct lifecycle entrypoints with no separate shorthand file.
 
 ## Plugin Development
 
@@ -30,31 +23,17 @@ Commands shipped under the `ai-eng/` namespace, plus lifecycle shorthand entrypo
 - `/ai-eng/create-skill` - create a new skill
 - `/ai-eng/create-tool` - create a new OpenCode tool
 
-## DevOps and Deployment
+## Shipping and Deployment
 
-- `/ai-eng/deploy` - deployment readiness and rollout
-- `/ai-eng/coolify` - Coolify management
-- `/ai-eng/docker` - Docker workflows
-- `/ai-eng/k8s` - Kubernetes deployment automation
-- `/ai-eng/cloudflare` - Cloudflare platform operations
-- `/ai-eng/github` - GitHub workflow automation
-- `/ai-eng/git-workflow` - Git workflow management
-- `/ai-eng/monitoring` - monitoring and observability setup
-- `/ai-eng/sentry` - Sentry incident response
-- `/ai-eng/slack` - Slack integration workflows
+- `/ai-eng/ship` - deploy to production with confidence
+- `/ai-eng/deploy` - pre-deployment verification and Coolify deployment
 
-## Code Quality and Security
+## Code Quality
 
-- `/ai-eng/code-review` - code quality review
-- `/ai-eng/security-scan` - security audits and vulnerability assessment
-- `/ai-eng/simplify` - simplify changed code for reuse, quality, and efficiency
-- `/ai-eng/socket-security` - npm/package supply-chain analysis
-- `/ai-eng/fact-check` - verify technical claims and references
-- `/ai-eng/knowledge-capture` - capture solved problems and patterns
+- `/ai-eng/simplify` - review and fix recently changed files for reuse, quality, and efficiency
 
 ## Learning and Knowledge
 
-- `/ai-eng/knowledge-architecture` - build a static-first knowledge map
 - `/ai-eng/decision-journal` - record durable decisions and tradeoffs
 - `/ai-eng/quality-gate` - define file-backed quality gates
 - `/ai-eng/maintenance-review` - capture recurring maintenance reviews
@@ -62,31 +41,12 @@ Commands shipped under the `ai-eng/` namespace, plus lifecycle shorthand entrypo
 - `/ai-eng/learning-dismiss` - OpenCode-only dismissal for the active learning recommendation
 - `/ai-eng/learning-snooze` - OpenCode-only snooze for the active learning recommendation
 
-Marketplace packaging note:
-- These seven commands ship in the `ai-eng-learning` Claude plugin group.
-- `/ai-eng/knowledge-capture` remains outside that group.
+## Audit and Orchestration
 
-## Testing and Debugging
-
-- `/ai-eng/api-test` - API testing and validation
-- `/ai-eng/playwright` - browser automation and E2E testing
-- `/ai-eng/chrome-debug` - Chrome DevTools inspection
-- `/ai-eng/ios-sim` - iOS simulator control
-- `/ai-eng/xcodebuild` - Xcode build/test automation
-
-## AI, Prompting, and Research
-
-- `/ai-eng/verbalize` - verbalized sampling for response diversity
-- `/ai-eng/content-optimize` - optimize prompts and other content
-- `/ai-eng/prompt-engineering` - comprehensive prompt engineering for coding agents
-- `/ai-eng/agent-analyzer` - analyze agent performance and routing
-- `/ai-eng/research-companion` - guided research synthesis
-- `/ai-eng/deep-research` - deep multi-source web research
-- `/ai-eng/context7-docs` - Context7 documentation retrieval
-
-## Database and Data
-
-- `/ai-eng/db-optimize` - database and query optimization
+- `/ai-eng/repo-audit` - principal-engineer repo audit and improvement plan (analysis only)
+- `/ai-eng/orchestrate` - multi-agent coordination for cross-domain tasks
+- `/ai-eng/dynamic-task` - tiered model routing for tasks
+- `/ai-eng/cook-status` - list active cooking-routines loops (prunes stale markers)
 
 ## Context and Utilities
 
@@ -98,23 +58,8 @@ Marketplace packaging note:
 - `/ai-eng/seo` - technical SEO and Core Web Vitals review (agent-backed, `seo-specialist`)
 - `ai-eng workflow run seo-review --runtime <runtime> "https://url"` - portable SEO audit via SDK runners (anthropic, codex, cursor, opencode, pi); writes dated report to `.ai-eng/reports/`
 
-## Shorthand and Compatibility Commands
+## Legacy Surface
 
-| Shorthand | Canonical Target |
-|-------|-------------------|
-| `/code-simplify` | `/ai-eng/simplify` |
-| `/ship` | `/ai-eng/deploy` |
-| `/test` | TDD entrypoint via `test-driven-development` skill |
+`packages/core/content/commands/` contains a larger legacy catalog (`/ai-eng/specify`, `/ai-eng/coolify`, `/ai-eng/docker`, `/ai-eng/k8s`, `/ai-eng/security-scan`, etc.). These are **not shipped** in the root build surface (`dist/.opencode/command/ai-eng/`) and should not be referenced as available commands.
 
-## Planned Orchestration Commands
-
-| Command | Purpose | Status |
-|---------|---------|--------|
-| `/multi-plan` | Multi-agent task decomposition | planned |
-| `/multi-execute` | Orchestrated multi-agent execution | planned |
-| `/multi-backend` | Backend-focused multi-agent work | planned |
-| `/multi-frontend` | Frontend-focused multi-agent work | planned |
-| `/orchestrate` | General multi-agent coordination | planned |
-
-Canonical command definitions live in `content/commands/`.
 See `docs/reference/workflow-surface-matrix.md` for the complete command-to-skill mapping.

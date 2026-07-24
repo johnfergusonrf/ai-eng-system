@@ -1,0 +1,38 @@
+{
+  "skill_name": "weekly-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the weekly-review skill: synthesize my commits from the past 7 days.",
+      "expected_output": "A concise weekly synthesis of authored commits grouped into highlights by bugfix, tech debt, and net-new work.",
+      "assertions": [
+        "The output groups work into bugfix / tech debt / net-new categories",
+        "The output covers only the requested time window",
+        "The output reads as highlights, not a raw commit list"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Do the weekly review.",
+      "expected_output": "The skill determines the current week's commits from git authorship and reports if the window or repo is unclear.",
+      "assertions": [
+        "The output states the time window used",
+        "The output does not fabricate commits",
+        "The output handles an empty week gracefully"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Weekly review across 3 repos where I made 40 commits, half of them merge or chore commits.",
+      "expected_output": "A cross-repo synthesis that filters mechanical commits (merges, chores) and highlights substantive work.",
+      "assertions": [
+        "Mechanical commits are filtered or de-emphasized",
+        "The output aggregates across repos without losing per-repo context",
+        "The synthesis is short enough for a status update"
+      ]
+    }
+  ]
+}

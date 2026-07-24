@@ -1,5 +1,5 @@
 ---
-name: verify
+name: ai-eng/verify
 description: Run a standardized verification loop - lint, typecheck, test, build
 agent: build
 version: 1.0.0

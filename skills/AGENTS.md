@@ -12,37 +12,26 @@ Mostly flat skill definitions for Claude Code and OpenCode, with a small number 
 
 ## Directory Structure
 
+The catalog holds 76 core skills. Rather than enumerating them here (the list drifts), use the filesystem as the source of truth:
+
 ```
 skills/
-├── comprehensive-research/   # Multi-phase research orchestration
-│   └── SKILL.md
-├── code-review-and-quality/   # Multi-axis review before merge
-│   └── SKILL.md
-├── code-simplification/       # Behavior-preserving simplification
-│   └── SKILL.md
-├── coolify-deploy/           # Coolify deployment best practices
-│   └── SKILL.md
-├── debugging-and-error-recovery/ # Root-cause debugging workflow
-│   └── SKILL.md
-├── graph-rag/                 # Relationship-aware graph retrieval
-│   └── SKILL.md
-├── git-worktree/             # Git worktree workflows
-│   └── SKILL.md
-├── incremental-implementation/ # Thin-slice implementation workflow
-│   └── SKILL.md
-├── multimodal-corpus-ingestion/ # Mixed corpus normalization and extraction
-│   └── SKILL.md
-├── plugin-dev/               # Plugin development knowledge base
-│   ├── SKILL.md
-│   └── references/           # Supporting documentation
-├── prompt-refinement/        # TCRO prompt structuring
-│   ├── SKILL.md
-│   └── templates/            # Phase-specific templates
-├── text-cleanup/             # AI verbosity removal patterns
-│   ├── SKILL.md
-│   └── patterns/             # Pattern definitions
-└── AGENTS.md                 # This file
+├── <skill-name>/            # One directory per skill, flat by default
+│   ├── SKILL.md             # Required: frontmatter (name, description) + instructions
+│   ├── evals/evals.json     # Proof cases (required for model-invoked skills)
+│   └── references/          # Optional supporting docs, templates, patterns
+├── ai-eng/                  # Namespace container (no SKILL.md of its own)
+│   └── simplify/
+├── pstack/                  # Namespace container (poteto-stack imports)
+│   └── arena/, automate-me/, how/, poteto-mode/, reflect/, ...
+├── workflow/                # Namespace container
+│   └── ralph-wiggum/
+├── gtm/                     # Vendored GTM catalog (opt-in, gitignored source)
+├── AGENTS.md                # This file
+└── DELETED_SKILLS.md        # Audit log of retired skills
 ```
+
+Rules: one skill per directory; `SKILL.md` frontmatter `name` must match the directory name; namespace containers group related skills and never carry their own `SKILL.md`.
 
 ## Skill Format
 

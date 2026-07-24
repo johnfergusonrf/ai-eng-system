@@ -14,14 +14,16 @@ This document defines the **agents and tools** available in this system. For the
 | build | edit | Implements changes |
 | review | read-only | Code review |
 
-## Specialized Agents (48 Total)
+## Specialized Agents (46 Total)
+
+Canonical source: `content/agents/` (mirrored to `.claude/agents/` and `.opencode/agents/` by the build).
 
 ### Architecture & Planning
 - `architect-advisor` - System architecture decisions and trade-off analysis
 - `backend-architect` - Backend system design and scalability
 - `infrastructure-builder` - Cloud infrastructure design and IaC
 - `aws-architect` - AWS service selection, cloud architecture, and Well-Architected guidance
-- `planner` - Feature implementation planning and task decomposition
+- `claude-planner-agent` - Feature planning and task decomposition (Claude router)
 
 ### Development & Coding
 - `frontend-reviewer` - Frontend code review (React, TypeScript, accessibility)
@@ -31,45 +33,31 @@ This document defines the **agents and tools** available in this system. For the
 - `java-pro` - Java development with modern features and patterns
 - `mobile-developer` - iOS, Android, React Native, and Flutter development
 - `data-engineer` - Data pipelines, warehousing, and streaming systems
-- `docs-lookup` - Documentation retrieval and verification from official sources
 - `documentation-specialist` - Comprehensive technical documentation generation
 - `docs-writer` - Concise product and feature documentation
+- `claude-work-agent` - Implementation and code changes (Claude router)
+- `claude-refactor-agent` - Code refactoring and restructuring (Claude router)
+- `claude-lookup-agent` - Fast lookups and fact retrieval (Claude router)
 
 ### Quality & Testing
 - `code-reviewer` - Comprehensive code quality assessment
 - `test-generator` - Automated test suite generation
-- `tdd-guide` - Test-driven development enforcement
 - `security-scanner` - Security vulnerability detection and fixes
 - `performance-engineer` - Application performance optimization
-- `build-error-resolver` - Build and compilation error diagnosis
-- `e2e-runner` - End-to-end Playwright testing
 - `plugin-validator` - Plugin structure validation and best practices
 - `text-cleaner` - AI-generated verbosity cleanup and content tightening
-
-### Language-Specific Reviewers (NEW)
-- `typescript-reviewer` - TypeScript/JavaScript type safety, async, React patterns
-- `python-reviewer` - Python type hints, async, testing, Pythonic idioms
-- `go-reviewer` - Go concurrency, error handling, interfaces, idioms
-- `java-reviewer` - Java Spring Boot, JPA, concurrency, enterprise patterns
-- `rust-reviewer` - Rust ownership, lifetimes, traits, async, safety
-- `cpp-reviewer` - C++ memory management, RAII, templates, modern C++
-- `kotlin-reviewer` - Kotlin coroutines, sealed classes, Android/KMP patterns
-- `csharp-reviewer` - C# async/await, LINQ, DI, .NET patterns
-
-### Reliability & Automation (NEW)
-- `silent-failure-hunter` - Detects swallowed errors, missing assertions, unmonitored paths
-- `loop-operator` - Manages autonomous agent loops with quality gates and recovery
+- `claude-debugger-agent` - Systematic debugging and error recovery (Claude router)
 
 ### DevOps & Operations
 - `deployment-engineer` - CI/CD pipeline design and deployment automation
 - `monitoring-expert` - Observability, alerting, and system monitoring
 - `cost-optimizer` - Cloud cost optimization and resource efficiency
-- `harness-optimizer` - Agent harness reliability, cost, and configuration tuning
+- `ci-watcher` - PR CI monitoring and failure reporting
 
 ### AI & Machine Learning
 - `ai-engineer` - AI integration and LLM application development
 - `ml-engineer` - Machine learning model development and deployment
-- `prompt-optimizer` - Prompt enhancement using research-backed techniques
+- `prompt-optimizer` - Prompt tightening into task/context/constraint/output/verification contracts
 - `agent-developer` - MCP, A2A, tool calling, and multi-agent orchestration
 
 ### Content & SEO
@@ -83,6 +71,18 @@ This document defines the **agents and tools** available in this system. For the
 
 ### Coordination
 - `subagent-orchestration` - Routes work to the most appropriate specialist agent
+- `claude-conductor` - Intent-based dispatch to Claude-powered subagents
+
+### Review & Validation
+- `review` - Multi-axis review orchestrator (dispatches code-reviewer, security-scanner, architect-advisor, performance-engineer)
+- `repo-audit-review` - Principal-engineer repository audit and improvement plan
+- `compatibility-scan-review` - Agent compatibility validation
+- `docs-reliability-review` - Documentation accuracy and freshness review
+- `startup-review` - Cold-start bootstrap path validation
+- `validation-review` - End-to-end validation and verification
+
+### Learning & Memory
+- `agents-memory-updater` - Memory and AGENTS.md updates from session transcripts
 
 ## Prompt Contracts
 
@@ -94,7 +94,7 @@ Subagent and command prompts follow a single contract enforced by the `prompt-re
 ```
 # Complete spec-driven development with ai-eng-system
 /ai-eng/research "authentication patterns"      # Gather context
-/ai-eng/specify "user authentication"        # Create specification
+/ai-eng/spec "user authentication"        # Create specification
 /ai-eng/plan --from-spec=specs/auth     # Create implementation plan
 /ai-eng/work "specs/auth/plan"              # Execute with quality gates
 /ai-eng/review                               # Multi-agent code review
@@ -103,7 +103,7 @@ Subagent and command prompts follow a single contract enforced by the `prompt-re
 ### Using prompt-refinement skill
 The prompt-refinement skill is automatically invoked by:
 - `/ai-eng/research` - Clarifies research scope and depth
-- `/ai-eng/specify` - Clarifies user stories and requirements
+- `/ai-eng/spec` - Clarifies user stories and requirements
 - `/ai-eng/plan` - Clarifies technical approach and constraints
 - `/ai-eng/work` - Clarifies execution context and quality requirements
 
@@ -183,33 +183,37 @@ The table below highlights the most important lifecycle and alignment skills. Th
 
 | Command | Description | Agent Mode |
 |---------|-------------|------------|
-| /research | Multi-phase research orchestration | read-only |
-| /specify | Create feature specifications | read-only |
-| /plan | Create detailed implementation plans | read-only |
-| /work | Execute plans with quality gates and tracking | build |
-| /review | Multi-perspective code review (32 agents) | read-only |
-| /ralph-wiggum | Full-cycle feature development with continuous iteration through all spec-driven workflow phases | build |
-| /deploy | Pre-deployment checklist and deployment workflows | build |
-| /content-optimize | Content and prompt enhancement | build |
-| /context | Context management and retrieval | read-only |
-| /create-plugin | Guided plugin creation workflow | build |
-| /create-agent | AI-assisted agent generation | build |
-| /create-command | AI-assisted command generation | build |
-| /create-skill | AI-assisted skill creation | build |
-| /create-tool | AI-assisted tool creation | build |
-| /knowledge-capture | Document solved problems for team | build |
-| /knowledge-architecture | Build static-first knowledge maps | build |
-| /decision-journal | Record durable decisions | build |
-| /quality-gate | Define file-backed quality gates | build |
-| /maintenance-review | Review drift and maintenance debt | read-only |
-| /prp-prd | Generate Product Requirements Document | plan |
-| /prp-plan | Create implementation plan from PRD | plan |
-| /prp-implement | Execute implementation plan | build |
-| /loop-start | Start autonomous agent loop | build |
-| /loop-status | Check loop status | plan |
-| /harness-audit | Audit agent harness configuration | plan |
+| /ai-eng/research | Multi-phase research orchestration | read-only |
+| /ai-eng/spec | Create feature specifications | read-only |
+| /ai-eng/plan | Create detailed implementation plans | read-only |
+| /ai-eng/work | Execute plans with quality gates and tracking | build |
+| /ai-eng/verify | Lint, typecheck, test, build verification loop | build |
+| /ai-eng/review | Multi-perspective code review | read-only |
+| /ai-eng/deep-review | All four review axes in parallel (most thorough) | read-only |
+| /ai-eng/simplify | Review and fix recently changed files | build |
+| /ai-eng/ralph-wiggum | Full-cycle feature development with continuous iteration through all spec-driven workflow phases | build |
+| /ai-eng/ship | Deploy to production with confidence | build |
+| /ai-eng/deploy | Pre-deployment checklist and deployment workflows | build |
+| /ai-eng/context | Context management and retrieval | read-only |
+| /ai-eng/init | Initialize ai-eng-system configuration | build |
+| /ai-eng/create-plugin | Guided plugin creation workflow | build |
+| /ai-eng/create-agent | AI-assisted agent generation | build |
+| /ai-eng/create-command | AI-assisted command generation | build |
+| /ai-eng/create-skill | AI-assisted skill creation | build |
+| /ai-eng/create-tool | AI-assisted tool creation | build |
+| /ai-eng/decision-journal | Record durable decisions | build |
+| /ai-eng/quality-gate | Define file-backed quality gates | build |
+| /ai-eng/maintenance-review | Review drift and maintenance debt | read-only |
+| /ai-eng/repo-audit | Principal-engineer repo audit and improvement plan | read-only |
+| /ai-eng/orchestrate | Multi-agent coordination for cross-domain tasks | build |
+| /ai-eng/dynamic-task | Tiered model routing for tasks | build |
+| /ai-eng/seo | SEO audit on a page or site | read-only |
+| /ai-eng/cook-status | List active cooking-routines loops | read-only |
+| /ai-eng/learning-approve | Approve active learning recommendation | build |
+| /ai-eng/learning-dismiss | Dismiss active learning recommendation | build |
+| /ai-eng/learning-snooze | Snooze active learning recommendation | build |
 
-See `docs/reference/commands.md` for the full 49-command inventory.
+See `docs/reference/commands.md` for the full 28-command inventory.
 
 ### Lifecycle Mapping
 
@@ -217,10 +221,10 @@ This repository keeps the `ai-eng/*` command namespace, but its main workflow no
 
 | ai-eng-system | Common lifecycle name |
 |---------------|-----------------------|
-| `/specify` | `/spec` |
-| `/plan` | `/plan` |
-| `/work` | `/build` |
-| `/review` | `/review` |
+| `/ai-eng/spec` | `/spec` |
+| `/ai-eng/plan` | `/plan` |
+| `/ai-eng/work` | `/build` |
+| `/ai-eng/review` | `/review` |
 
 ### Using /research
 
@@ -228,13 +232,13 @@ The research command orchestrates multiple agents for thorough investigation:
 
 ```bash
 # Basic research
-/research "How does authentication work in this codebase?"
+/ai-eng/research "How does authentication work in this codebase?"
 
 # Research with specific scope
-/research "Analyze payment processing" --scope=codebase --depth=deep
+/ai-eng/research "Analyze payment processing" --scope=codebase --depth=deep
 
 # Research from ticket
-/research --ticket="docs/tickets/AUTH-123.md"
+/ai-eng/research --ticket="docs/tickets/AUTH-123.md"
 ```
 
 **Research Phases:**
@@ -292,17 +296,6 @@ Located in `hooks/`, session lifecycle automations:
 | `eval-harness` | everything-claude-code | Agent evaluation framework |
 | `context-budget` | everything-claude-code | Context window management |
 
-### New Commands (from everything-claude-code)
-
-| Command | Purpose |
-|---------|---------|
-| `/prp-prd` | Generate Product Requirements Document |
-| `/prp-plan` | Create implementation plan from PRD |
-| `/prp-implement` | Execute implementation plan |
-| `/loop-start` | Start autonomous agent loop |
-| `/loop-status` | Check loop status |
-| `/harness-audit` | Audit agent harness configuration |
-
 ### Multi-Platform Setup Guides (from addyosmani/agent-skills)
 Located in `docs/`:
 
@@ -322,12 +315,13 @@ Located in `mcp-configs/mcp-servers.json`:
 
 | Directory | Hierarchy Level | Purpose | Key Files |
 |-----------|-----------------|---------|-----------|
-| `src/` | Core Implementation | TypeScript source code | `agents/`, `cli/`, `context/`, `execution/`, `research/` |
+| `packages/cli/` | Core Implementation | Shipped CLI/runtime TypeScript source | `src/execution/`, `src/context/` |
+| `agents/` | Runner Packages | Multi-SDK agent runners | `research-runner/`, `seo-review-runner/` |
 | `tests/` | Quality Assurance | Comprehensive test suite | `unit.test.ts`, `integration.test.ts`, `performance.test.ts` |
-| `docs/` | Knowledge Base | Documentation and research | `PHASE-3-USAGE.md`, `research-command-guide.md` |
+| `docs/` | Knowledge Base | Documentation and research | `reference/`, `research-command-guide.md` |
 | `.claude/` | Command Implementation | Claude Code command definitions | `commands/*.md` |
-| `content/` | Agent Documentation | Agent & command documentation | `agents/`, `commands/` |
-| `skills/` | Skill Definitions | Modular skill definitions | `devops/`, `prompting/`, `research/` |
+| `content/` | Agent & Command Source | Canonical agent/command definitions | `agents/`, `commands/` |
+| `skills/` | Skill Definitions | Modular skill definitions (76 core skills) | `*/SKILL.md` |
 | `scripts/` | Build Utilities | Build & installation utilities | `install.js` |
 
 ## Build Commands

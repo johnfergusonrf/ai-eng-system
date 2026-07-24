@@ -22,19 +22,19 @@ Every user-facing surface in ai-eng-system maps to one of four ownership categor
 
 | Phase | Canonical Skill | Command Entrypoint | Alias |
 |-------|----------------|--------------------|-------|
-| Define | `spec-driven-development` | `/ai-eng/specify` | `/spec` |
-| Plan | `planning-and-task-breakdown` | `/ai-eng/plan` | `/plan` |
-| Build | `incremental-implementation` | `/ai-eng/work` | `/build` |
-| Build | `test-driven-development` | `/ai-eng/work` | `/test` |
+| Define | `spec-driven-development` | `/ai-eng/spec` | - |
+| Plan | `planning-and-task-breakdown` | `/ai-eng/plan` | - |
+| Build | `incremental-implementation` | `/ai-eng/work` | - |
+| Build | `test-driven-development` | `/ai-eng/work` | - |
 | Build | `source-driven-development` | `/ai-eng/context` | - |
 | Verify | `browser-testing-with-devtools` | - | - |
 | Verify | `debugging-and-error-recovery` | - | - |
-| Verify | quality gate loop | `/verify` | - |
+| Verify | quality gate loop | `/ai-eng/verify` | - |
 | Review | `code-review-and-quality` | `/ai-eng/review` | - |
-| Review | `code-simplification` | `/ai-eng/simplify` | `/code-simplify` |
-| Review | `security-and-hardening` | `/ai-eng/security-scan` | - |
-| Ship | `ci-cd-and-automation` | `/ai-eng/deploy` | `/ship` |
-| Ship | `shipping-and-launch` | `/ai-eng/deploy` | `/ship` |
+| Review | `code-simplification` | `/ai-eng/simplify` | - |
+| Review | `security-and-hardening` | `/ai-eng/review` (security axis) | - |
+| Ship | `ci-cd-and-automation` | `/ai-eng/deploy` | - |
+| Ship | `shipping-and-launch` | `/ai-eng/ship` | - |
 
 ## Repo-Specific Skills
 
@@ -70,8 +70,7 @@ These are unique to ai-eng-system and sit outside the standard lifecycle.
 
 - Canonical skills use `kebab-case` directory names
 - Namespaced skills use `namespace/name` paths (e.g. `ai-eng/simplify`)
-- Commands use the `ai-eng/` prefix for the primary surface
-- Alias commands have no prefix (e.g. `/spec`, `/build`, `/ship`)
+- All commands use the `ai-eng/` prefix; the bare alias commands (`/spec`, `/build`, `/ship`, `/verify`, etc.) were retired — use the prefixed form
 - Agent names match their filename: `content/agents/{name}.md`
 - Runtime features surface through commands, never directly
 

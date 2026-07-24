@@ -1,0 +1,38 @@
+{
+  "skill_name": "eval-harness",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the eval-harness skill: set up an evaluation for our code-review agent so we can tell whether prompt changes improve it.",
+      "expected_output": "An evaluation setup with test cases, assertions, and a scoring/comparison method that can detect regressions.",
+      "assertions": [
+        "The output defines concrete eval cases",
+        "The output includes measurable assertions",
+        "The output supports before/after comparison"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Our agent feels worse lately. Evaluate it.",
+      "expected_output": "The skill asks what 'worse' means operationally or proposes a baseline metric set rather than guessing.",
+      "assertions": [
+        "The output converts a vague complaint into measurable criteria",
+        "The output proposes a baseline for comparison",
+        "The output does not fabricate historical performance data"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Design an eval harness to compare 3 model providers across 12 agent skills, tracked over weekly releases.",
+      "expected_output": "A matrixed evaluation design (providers x skills x releases) with aggregation and trend tracking.",
+      "assertions": [
+        "The output handles the multi-dimensional comparison",
+        "The output includes trend tracking over time",
+        "The output addresses statistical noise or sample size"
+      ]
+    }
+  ]
+}

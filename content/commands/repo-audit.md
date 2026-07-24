@@ -1,5 +1,5 @@
 ---
-name: repo-audit
+name: ai-eng/repo-audit
 description: Principal-engineer repository audit with evidence-based findings and a prioritized improvement plan. Analysis only — no code changes.
 agent: repo-audit-review
 version: 1.0.0

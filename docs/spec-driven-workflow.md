@@ -7,10 +7,10 @@ This guide documents the complete **Research → Specify → Plan → Work → V
 ```mermaid
 flowchart TD
     A[Start: Research] -->|/ai-eng/research| B[Specify]
-    B -->|/ai-eng/specify| C[Plan]
+    B -->|/ai-eng/spec| C[Plan]
     C -->|/ai-eng/plan| D[Work]
     D -->|/ai-eng/work| E[Verify]
-    E -->|/verify| F[Review]
+    E -->|/ai-eng/verify| F[Review]
     
     F -->|If changes needed| D
     F -->|Approved| G[Complete]
@@ -62,10 +62,10 @@ flowchart TD
 | Phase | Command | Output | Ralph Wiggum | Feeds Into |
 |-------|---------|--------|--------------|------------|
 | **1. Research** | `/ai-eng/research` | Research findings in `docs/research/` | `--ralph` for iterative deepening | Specify |
-| **2. Specify** | `/ai-eng/specify` | Feature spec in `specs/[feature]/spec.md` | `--ralph` for requirement refinement | Plan |
+| **2. Specify** | `/ai-eng/spec` | Feature spec in `specs/[feature]/spec.md` | `--ralph` for requirement refinement | Plan |
 | **3. Plan** | `/ai-eng/plan` | Implementation plan in `specs/[feature]/plan.md` | `--ralph` for task atomicity | Work |
 | **4. Work** | `/ai-eng/work` | Implemented features with quality gates | `--ralph` for TDD cycles | Verify |
-| **5. Verify** | `/verify` | Pass/fail on lint, typecheck, test, build | runs full gate sequence | Review |
+| **5. Verify** | `/ai-eng/verify` | Pass/fail on lint, typecheck, test, build | runs full gate sequence | Review |
 | **6. Review** | `/ai-eng/review` | Review report with approval status | `--ralph` for thorough analysis | Complete or back to Work |
 
 ## Command Integration
@@ -73,10 +73,10 @@ flowchart TD
 ### Research → Specify
 ```bash
 # Research a topic, then feed into specification
-/ai-eng/research "authentication patterns" --feed-into=specify
+/ai-eng/research "authentication patterns" --feed-into=spec
 
 # Or manually use research output
-/ai-eng/specify "user authentication" --from-research=docs/research/2025-12-30-auth-patterns.md
+/ai-eng/spec "user authentication" --from-research=docs/research/2025-12-30-auth-patterns.md
 ```
 
 ### Specify → Plan
@@ -97,7 +97,7 @@ flowchart TD
 ### Work → Verify → Review
 ```bash
 # After work completes, run verification
-/verify
+/ai-eng/verify
 
 # Then review the changes
 /ai-eng/review
@@ -115,7 +115,7 @@ flowchart TD
 | Scenario | Recommended Command | Iteration Type |
 |----------|-------------------|----------------|
 | **Complex research topic** | `/ai-eng/research "topic" --ralph` | Progressive deepening |
-| **Vague requirements** | `/ai-eng/specify "feature" --ralph` | Requirement refinement |
+| **Vague requirements** | `/ai-eng/spec "feature" --ralph` | Requirement refinement |
 | **Complex implementation** | `/ai-eng/plan --from-spec=... --ralph` | Task completeness |
 | **Tricky implementation** | `/ai-eng/work "feature" --ralph` | TDD cycles |
 | **Critical code review** | `/ai-eng/review src/ --ralph` | Thorough analysis |
@@ -138,7 +138,7 @@ flowchart TD
 /ai-eng/research "microservices security patterns" --ralph --ralph-max-iterations 15 --ralph-show-progress
 
 # 2. Specification with requirement refinement
-/ai-eng/specify "secure microservice communication" --from-research=docs/research/...md --ralph --ralph-quality-gate="rg '\[NEEDS CLARIFICATION\]' specs/*/spec.md"
+/ai-eng/spec "secure microservice communication" --from-research=docs/research/...md --ralph --ralph-quality-gate="rg '\[NEEDS CLARIFICATION\]' specs/*/spec.md"
 
 # 3. Enhanced planning with task completeness
 /ai-eng/plan --from-spec=specs/secure-comm/spec.md --ralph --ralph-quality-gate="rg 'Depends On:' specs/*/plan.md"
@@ -155,10 +155,10 @@ flowchart TD
 ## Quick Start Checklist
 
 - [ ] **Phase 1**: Run `/ai-eng/research [topic]` to gather context (add `--ralph` for complex topics)
-- [ ] **Phase 2**: Run `/ai-eng/specify [feature] --from-research=[research-file]` to create spec (add `--ralph` for vague requirements)
+- [ ] **Phase 2**: Run `/ai-eng/spec [feature] --from-research=[research-file]` to create spec (add `--ralph` for vague requirements)
 - [ ] **Phase 3**: Run `/ai-eng/plan --from-spec=specs/[feature]/spec.md` to create plan (add `--ralph` for complex features)
 - [ ] **Phase 4**: Run `/ai-eng/work specs/[feature]/plan.md` to implement (add `--ralph` for TDD cycles)
-- [ ] **Phase 5**: Run `/verify` to pass lint, typecheck, test, and build gates
+- [ ] **Phase 5**: Run `/ai-eng/verify` to pass lint, typecheck, test, and build gates
 - [ ] **Phase 6**: Run `/ai-eng/review` to get multi-agent review (add `--ralph` for critical code)
 - [ ] **Repeat**: If review finds issues, go back to Phase 4
 
@@ -186,7 +186,7 @@ flowchart TD
 /ai-eng/research "payment processing integration stripe"
 
 # 2. Create specification using research
-/ai-eng/specify "payment processing" --from-research=docs/research/2025-12-30-payment-stripe.md
+/ai-eng/spec "payment processing" --from-research=docs/research/2025-12-30-payment-stripe.md
 
 # 3. Create implementation plan
 /ai-eng/plan --from-spec=specs/payment/spec.md
@@ -195,7 +195,7 @@ flowchart TD
 /ai-eng/work specs/payment/plan.md
 
 # 5. Verify quality gates pass
-/verify
+/ai-eng/verify
 
 # 6. Get multi-agent review
 /ai-eng/review
@@ -206,7 +206,7 @@ flowchart TD
 - [../README.md](../README.md) - Project overview
 - [../IMPLEMENTATION-ROADMAP.md](../IMPLEMENTATION-ROADMAP.md) - Technical roadmap
 - [../TODO.md](../TODO.md) - Current task tracking
-- [../content/commands/specify.md](../content/commands/specify.md) - Specify command details
+- [../content/commands/spec.md](../content/commands/spec.md) - Spec command details
 - [../content/commands/plan.md](../content/commands/plan.md) - Plan command details
 - [../content/commands/work.md](../content/commands/work.md) - Work command details
 - [../content/commands/verify.md](../content/commands/verify.md) - Verify command details

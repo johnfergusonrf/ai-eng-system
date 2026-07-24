@@ -1,6 +1,6 @@
 ---
 name: orchestrate
-description: Use only when the user explicitly types `/orchestrate <goal>` to decompose a large task, spawn a tree of parallel cloud-agent workers/subplanners/verifiers via the Cursor SDK, and collect structured handoffs; do not invoke autonomously.
+description: Use only when the user explicitly types `/ai-eng/orchestrate <goal>` to decompose a large task, spawn a tree of parallel cloud-agent workers/subplanners/verifiers via the Cursor SDK, and collect structured handoffs; do not invoke autonomously.
 metadata:
   category: user-invoked
   version: 1.0.0
@@ -14,7 +14,7 @@ Default output: return only the result, blockers, and required evidence. Omit pr
 
 > **Status: planned.** The spawn/wait/handoff driver (`scripts/cli.ts`) and role references (`references/dispatcher.md`, `references/planner.md`) are not in this repository yet. Until they land, use the **`agents-sdk-dev`** skill (harness=cursor) with cloud `Agent.create({ cloud: { repos } })` for multi-agent work, or the local pattern in `agents/research-runner/cursor/runner.ts`.
 
-An explicit `/orchestrate <goal>` will fan out a large task across parallel Cursor cloud agents. Workers don't talk to each other; they talk up through structured handoffs. The intended design: a script owns the spawn/wait loop, the planner writes `plan.json`, the script executes it, and the planner reads handoffs to decide what comes next.
+An explicit `/ai-eng/orchestrate <goal>` will fan out a large task across parallel Cursor cloud agents. Workers don't talk to each other; they talk up through structured handoffs. The intended design: a script owns the spawn/wait loop, the planner writes `plan.json`, the script executes it, and the planner reads handoffs to decide what comes next.
 
 **Required reading: the `agents-sdk-dev` skill** (`skills/agents-sdk-dev/SKILL.md` in this repo, specify harness=cursor). Spawning, auth, and the error taxonomy live there.
 
@@ -28,7 +28,7 @@ An explicit `/orchestrate <goal>` will fan out a large task across parallel Curs
 1. Load **`agents-sdk-dev`** with harness=cursor.
 2. Use **cloud** runtime with explicit `cloud: { repos: [...] }` per worker task.
 3. Persist handoffs as JSON files on disk; use deterministic code for phase transitions (see `agents/research-runner/shared/workflow-contract.ts`).
-4. Track `/orchestrate` status in `docs/reference/commands.md` (listed as **planned**).
+4. Track `/ai-eng/orchestrate` status in `docs/reference/commands.md` (listed as **planned**).
 
 ## Core principles
 
