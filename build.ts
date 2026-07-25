@@ -2419,9 +2419,14 @@ const buildCache: BuildCache = {
 
 async function getPackageJson(): Promise<RootPackageJson> {
     if (!buildCache.packageJson) {
-        buildCache.packageJson = JSON.parse(
-            await readFile(join(ROOT, "packages", "cli", "package.json"), "utf-8"),
-        );
+        // Version stamps (marketplace.json, plugin.json) must track the
+        // publishable CLI package, not the private workspace root. Fall back
+        // to the root manifest in minimal fixture environments (tests).
+        const cliManifest = join(ROOT, "packages", "cli", "package.json");
+        const manifestPath = existsSync(cliManifest)
+            ? cliManifest
+            : join(ROOT, "package.json");
+        buildCache.packageJson = JSON.parse(await readFile(manifestPath, "utf-8"));
     }
     return buildCache.packageJson!;
 }
