@@ -1,5 +1,5 @@
 ---
-name: dynamic-claude-router
+name: dynamic-router
 description: Conductor/subagent routing for tasks across multiple harnesses. Assesses task complexity and intent, then dispatches to the appropriate subagent model via a harness-specific adapter. Supports Anthropic (Claude), Cursor, OpenCode, Codex (OpenAI), and Pi adapters. Use via /dynamic-task command or direct invocation from other skills.
 metadata:
   category: user-invoked
@@ -139,7 +139,7 @@ Tasks that combine planning and implementation are automatically chained into mu
 ### Programmatic
 
 ```typescript
-import { conduct, routeTask, planTask } from "./src/agents/claude-router";
+import { conduct, routeTask, planTask } from "./src/agents/dynamic-router";
 
 // Default (Anthropic)
 const result = await conduct({ task: "fix the auth bug" });
@@ -160,7 +160,7 @@ const plan = planTask("plan and implement a feature", "cursor");
 ### Custom Adapter
 
 ```typescript
-import { RouterAdapter, SubagentRole, route } from "./src/agents/claude-router";
+import { RouterAdapter, SubagentRole, route } from "./src/agents/dynamic-router";
 
 const myAdapter: RouterAdapter = {
     name: "custom",
@@ -182,7 +182,7 @@ const decision = route("implement auth", myAdapter.models);
 ## File Structure
 
 ```
-src/agents/claude-router/
+src/agents/dynamic-router/
 ├── core/
 │   ├── types.ts      # Harness-neutral types, ModelFamily, RouterAdapter
 │   ├── router.ts     # assessComplexity, detectIntent, selectRole, route, buildPlan

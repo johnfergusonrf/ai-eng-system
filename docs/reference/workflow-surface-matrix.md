@@ -39,7 +39,7 @@ Canonical source: `content/commands/` (28 commands), mirrored to `.claude/comman
 | Command | Type | Canonical Owner | Notes |
 |---------|------|-----------------|-------|
 | `/ai-eng/orchestrate` | agent-backed | `subagent-orchestration` | Multi-agent coordination for cross-domain tasks |
-| `/ai-eng/dynamic-task` | skill-backed | `dynamic-claude-router` | Tiered model routing for tasks |
+| `/ai-eng/dynamic-task` | skill-backed | `dynamic-router` | Tiered model routing for tasks |
 
 ## Plugin Development
 

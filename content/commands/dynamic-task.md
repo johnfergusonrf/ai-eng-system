@@ -15,7 +15,7 @@ Default output: return only the result, blockers, and required evidence. Omit pr
 
 # /dynamic-task
 
-Route a task to the optimal Anthropic model via the dynamic-claude-router conductor.
+Route a task to the optimal Anthropic model via the dynamic-router conductor.
 
 ## Usage
 
@@ -42,7 +42,7 @@ Route a task to the optimal Anthropic model via the dynamic-claude-router conduc
 
 When this command is invoked:
 
-1. Load the `dynamic-claude-router` skill.
+1. Load the `dynamic-router` skill.
 2. Import `conduct` from `src/agents/claude-router`.
 3. Call `conduct({ task: "<user's task>" })`.
 4. Present the routing decision and results to the user.
