@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.13.0](https://github.com/v1truv1us/ai-eng-system/compare/v1.12.1...v1.13.0) (2026-07-24)
+
+### Added
+- **Codex CLI install target**: the build now emits `dist/.codex/agents/*.toml` (curated core agents; reviewers/auditors stamped `sandbox_mode="read-only"`) and `dist/.agents/skills/` (the shared agentskills tree, plus one `ai-eng-<cmd>` skill per command since Codex has no command surface). `bun run install:global` installs to `~/.codex/agents/` and `~/.agents/skills/`; `install:local` mirrors under `.codex/` and `.agents/`. A manifest-based sync only removes entries it previously installed, so user-managed skills and agents are never clobbered.
+
+### Changed
+- **`claude-*` agents scoped to the Claude marketplace**: the six `claude-*` router agents hardcode Anthropic models and now carry a `harness: claude` frontmatter marker. They ship only to the Claude marketplace and `.claude/`; OpenCode, Cursor, and Codex receive the 40 harness-neutral agents. The installer clears stale `claude-*` copies from existing OpenCode installs without touching user agents.
+- **`dynamic-claude-router` renamed to `dynamic-router`**: the skill and its runtime package (`packages/cli/src/agents/dynamic-router/`) are harness-neutral (Anthropic, Cursor, OpenCode, Codex, Pi adapters); the old name implied Claude-only scope.
+- **Docs reconciled with the post-audit catalog**: AGENTS.md and the reference docs now list the real 46 agents and 29 commands (phantom agents/commands removed), and all commands are uniformly `ai-eng/`-prefixed.
+
+### Fixed
+- **Marketplace/plugin version stamping**: `build.ts` read the private workspace root `package.json` (1.12.0) instead of the publishable `packages/cli` manifest, so every rebuild reverted `marketplace.json` and `plugin.json` versions. The build now stamps from `packages/cli/package.json` so generated manifests track the release version.
+- **Skill evals coverage**: added `evals/evals.json` to the 14 user-invoked skills that lacked them; all 76 core skills now carry evals.
+
 ## [1.12.1](https://github.com/v1truv1us/ai-eng-system/compare/v1.12.0...v1.12.1) (2026-07-18)
 
 ### Fixed
