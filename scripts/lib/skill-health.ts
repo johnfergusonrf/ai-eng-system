@@ -3,12 +3,7 @@
  * Detects redundancy, staleness, eval gaps, unused skills, and frontmatter drift
  * across the core skills/ catalog (the vendored skills-gtm/ set is exempt).
  */
-import {
-    existsSync,
-    readFileSync,
-    readdirSync,
-    statSync,
-} from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export interface SkillInfo {
@@ -166,8 +161,7 @@ export function detectEvalGaps(skills: SkillInfo[]): Finding[] {
             severity: "high" as Severity,
             kind: "eval-gap" as const,
             subject: s.name,
-            detail:
-                "model-invoked skill (auto-loads) without evals/ proof. Add evals/evals.json or set metadata.category: user-invoked.",
+            detail: "model-invoked skill (auto-loads) without evals/ proof. Add evals/evals.json or set metadata.category: user-invoked.",
             healable: true,
         }));
 }
@@ -224,7 +218,10 @@ export function detectFrontmatterDrift(skills: SkillInfo[]): Finding[] {
 }
 
 /** Flag oversized skills (high token cost per auto-load). */
-export function detectOversize(skills: SkillInfo[], maxBytes = 12000): Finding[] {
+export function detectOversize(
+    skills: SkillInfo[],
+    maxBytes = 12000,
+): Finding[] {
     return skills
         .filter((s) => s.category === "model-invoked" && s.bytes > maxBytes)
         .map((s) => ({

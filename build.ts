@@ -920,7 +920,8 @@ function renderCodexAgentToml(
     const meta = parsed.meta;
     const name = String(meta.name ?? "").trim();
     const description = String(meta.description ?? "").trim();
-    if (!name) throw new Error(`Codex agent missing name: ${filePathForErrors}`);
+    if (!name)
+        throw new Error(`Codex agent missing name: ${filePathForErrors}`);
     if (!description)
         throw new Error(
             `Codex agent missing description: ${filePathForErrors}`,
@@ -1025,7 +1026,6 @@ async function validateCodexOutput(
         throw new Error(`Codex build validation failed:\n${errors.join("\n")}`);
     }
 }
-
 
 async function validateCursorOutput(cursorRoot: string): Promise<void> {
     const errors: string[] = [];
@@ -1530,18 +1530,8 @@ const PLUGIN_MAP: Record<string, PluginConfig> = {
         description:
             "Core workflow: plan, work, review cycle with research and context engineering",
         category: "development",
-        keywords: [
-            "ai",
-            "engineering",
-            "workflow",
-            "planning",
-            "review",
-        ],
-        tags: [
-            "productivity",
-            "workflow",
-            "architecture",
-        ],
+        keywords: ["ai", "engineering", "workflow", "planning", "review"],
+        tags: ["productivity", "workflow", "architecture"],
         hasHooks: true,
     },
     "ai-eng-learning": {
@@ -2426,7 +2416,9 @@ async function getPackageJson(): Promise<RootPackageJson> {
         const manifestPath = existsSync(cliManifest)
             ? cliManifest
             : join(ROOT, "package.json");
-        buildCache.packageJson = JSON.parse(await readFile(manifestPath, "utf-8"));
+        buildCache.packageJson = JSON.parse(
+            await readFile(manifestPath, "utf-8"),
+        );
     }
     return buildCache.packageJson!;
 }

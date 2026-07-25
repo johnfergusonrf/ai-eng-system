@@ -191,7 +191,9 @@ function getClaudeOnlyAgentNames() {
   const contentAgents = path.join(packageRoot, "content", "agents");
   if (!fs.existsSync(contentAgents))
     return names;
-  for (const entry of fs.readdirSync(contentAgents, { withFileTypes: true })) {
+  for (const entry of fs.readdirSync(contentAgents, {
+    withFileTypes: true
+  })) {
     if (!entry.isFile() || !entry.name.endsWith(".md"))
       continue;
     const text = fs.readFileSync(path.join(contentAgents, entry.name), "utf-8");

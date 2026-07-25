@@ -25,9 +25,9 @@ import {
     detectRedundancy,
     detectStaleness,
     detectUnused,
+    type Finding,
     readInvocationLedger,
     scanSkills,
-    type Finding,
 } from "./lib/skill-health.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -103,10 +103,7 @@ function buildReport(
 ): string {
     const bySeverity = (sev: Finding["severity"]) =>
         findings.filter((f) => f.severity === sev);
-    const section = (
-        title: string,
-        rows: Finding[],
-    ): string =>
+    const section = (title: string, rows: Finding[]): string =>
         rows.length === 0
             ? `\n### ${title}\n\n_None._\n`
             : `\n### ${title} (${rows.length})\n\n${rows

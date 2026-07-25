@@ -276,7 +276,8 @@ function syncWithManifest(opts: {
     if (!fs.existsSync(srcDir)) return 0;
 
     const current = new Set(
-        fs.readdirSync(srcDir, { withFileTypes: true })
+        fs
+            .readdirSync(srcDir, { withFileTypes: true })
             .filter((e) => (e.isDirectory() ? true : fileFilter(e.name)))
             .map((e) => e.name),
     );
@@ -284,7 +285,9 @@ function syncWithManifest(opts: {
     // Remove entries we installed before but no longer ship.
     const manifestPath = path.join(tgtDir, manifestName);
     if (fs.existsSync(manifestPath)) {
-        const prev: string[] = JSON.parse(fs.readFileSync(manifestPath, "utf-8"));
+        const prev: string[] = JSON.parse(
+            fs.readFileSync(manifestPath, "utf-8"),
+        );
         for (const name of prev) {
             if (!current.has(name)) {
                 fs.rmSync(path.join(tgtDir, name), {
@@ -377,7 +380,9 @@ function getClaudeOnlyAgentNames(): Set<string> {
     const names = new Set<string>();
     const contentAgents = path.join(packageRoot, "content", "agents");
     if (!fs.existsSync(contentAgents)) return names;
-    for (const entry of fs.readdirSync(contentAgents, { withFileTypes: true })) {
+    for (const entry of fs.readdirSync(contentAgents, {
+        withFileTypes: true,
+    })) {
         if (!entry.isFile() || !entry.name.endsWith(".md")) continue;
         const text = fs.readFileSync(
             path.join(contentAgents, entry.name),
@@ -464,7 +469,8 @@ async function install(
         const tgtDir = path.join(targetDir, dir);
         if (!fs.existsSync(srcDir) || !fs.existsSync(tgtDir)) continue;
         const srcSet = new Set(
-            fs.readdirSync(srcDir, { withFileTypes: true })
+            fs
+                .readdirSync(srcDir, { withFileTypes: true })
                 .filter((e) => e.isDirectory())
                 .map((e) => e.name),
         );

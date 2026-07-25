@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 /**
  * Lint: every model-invoked skill must ship an evals/ directory with proof.
  *
@@ -13,7 +14,6 @@
  * Wire into CI after `bun run format:skills`.
  */
 import { dirname, join } from "node:path";
-import { readdirSync, readFileSync, existsSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");

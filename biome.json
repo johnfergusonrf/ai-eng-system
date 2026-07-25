@@ -47,7 +47,8 @@
             "!**/*.d.ts",
             "!**/.claude/worktrees",
             "!**/.claude/packages",
-            "!**/packages/cli/src/**/*.d.ts"
+            "!**/packages/cli/src/**/*.d.ts",
+            "!scripts/install.js"
         ]
     }
 }

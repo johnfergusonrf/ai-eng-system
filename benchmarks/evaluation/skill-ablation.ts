@@ -88,7 +88,11 @@ async function emitPairs(
             task_id: taskId,
             prompt_type: "enhanced",
             response: `[PROMPT — run WITH the ${skillName} skill loaded]\n\n--- SKILL: ${skillName} ---\n${skillContent}\n--- END SKILL ---\n\n${ev.prompt}`,
-            metadata: { skill: skillName, case: ev.name, assertions: ev.assertions },
+            metadata: {
+                skill: skillName,
+                case: ev.name,
+                assertions: ev.assertions,
+            },
         };
         await fsp.writeFile(
             path.join(outDir, `${taskId}_baseline.json`),
