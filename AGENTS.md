@@ -339,6 +339,11 @@ bun run clean
 # Validate build
 bun run validate
 
+# Local CI gates (CI runs locally, not in GitHub Actions)
+bun run verify        # Fast gate: typecheck, lint, skill format/evals, fast tests
+bun run verify:slow   # Slow gate: performance, learning-automation, integration tests
+bun run verify:all    # Both gates + full test suite
+
 # Installation
 bun run install:global  # Global install (all supported harnesses)
 bun run install:local    # Local install into the current project
