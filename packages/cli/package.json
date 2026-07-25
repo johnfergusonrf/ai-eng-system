@@ -94,9 +94,9 @@
     "@clack/prompts": "^1.2.0",
     "@opencode-ai/plugin": "^1.4.3",
     "@opencode-ai/sdk": "^1.4.3",
-    "@opentui/core": "^0.1.99",
-    "web-tree-sitter": "0.25.10",
-    "glob": "^13.0.6"
+    "@opentui/core": "^0.4.5",
+    "glob": "^13.0.6",
+    "web-tree-sitter": "0.25.10"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.11",

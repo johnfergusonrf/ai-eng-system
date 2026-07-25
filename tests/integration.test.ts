@@ -88,13 +88,14 @@ describe("AI Engineering System - Integration Tests", () => {
         it("should create OpenCode plugin structure", async () => {
             const opencodeDir = join(TEST_ROOT, "dist", ".opencode");
 
-            // Check main components
+            // Check main components: commands are namespaced, agents are flat
             expect(existsSync(join(opencodeDir, "commands", "ai-eng"))).toBe(
                 true,
             );
-            expect(existsSync(join(opencodeDir, "agents", "ai-eng"))).toBe(
-                true,
-            );
+            expect(existsSync(join(opencodeDir, "agents"))).toBe(true);
+            expect(
+                existsSync(join(opencodeDir, "agents", "code-reviewer.md")),
+            ).toBe(true);
         });
 
         it("should copy skills to both platforms", async () => {
@@ -196,7 +197,6 @@ describe("AI Engineering System - Integration Tests", () => {
                 "dist",
                 ".opencode",
                 "agents",
-                "ai-eng",
             );
             const claudeAgentsDir = join(
                 TEST_ROOT,
@@ -217,36 +217,30 @@ describe("AI Engineering System - Integration Tests", () => {
                     const claudeContent = await readFile(claudePath, "utf-8");
                     expect(claudeContent).toContain("---");
 
-                    // OpenCode agents are organized by category subdirectories
-                    // Find which category the agent belongs to by reading its frontmatter
                     const agentContent = await readFile(
                         join(contentAgentsDir, file),
                         "utf-8",
                     );
-                    const categoryMatch =
-                        agentContent.match(/category:\s*([^\n]+)/);
-                    const category = categoryMatch
-                        ? categoryMatch[1]
-                              .trim()
-                              .toLowerCase()
-                              .replace(/\s+/g, "-")
-                        : "general";
 
-                    // Check OpenCode transformation in category subdirectory
-                    const opencodeCategoryDir = join(
-                        opencodeAgentsDir,
-                        category,
+                    // Claude-specific agents (harness: claude) ship only to the
+                    // Claude marketplace — they are excluded from OpenCode.
+                    const isClaudeOnly = /^harness:\s*claude\s*$/m.test(
+                        agentContent,
                     );
-                    const opencodePath = join(opencodeCategoryDir, file);
-                    expect(existsSync(opencodePath)).toBe(true);
 
-                    const opencodeContent = await readFile(
-                        opencodePath,
-                        "utf-8",
-                    );
-                    // Agents use YAML frontmatter with mode field
-                    expect(opencodeContent).toContain("---");
-                    expect(opencodeContent).toContain("mode:");
+                    // OpenCode agents are flat (e.g. agents/code-reviewer.md)
+                    const opencodePath = join(opencodeAgentsDir, file);
+                    expect(existsSync(opencodePath)).toBe(!isClaudeOnly);
+
+                    if (!isClaudeOnly) {
+                        const opencodeContent = await readFile(
+                            opencodePath,
+                            "utf-8",
+                        );
+                        // Agents use YAML frontmatter with mode field
+                        expect(opencodeContent).toContain("---");
+                        expect(opencodeContent).toContain("mode:");
+                    }
                 }
             }
         });
@@ -460,11 +454,25 @@ This is test agent ${i}.
             });
             expect(pluginJson.license).toBe("MIT");
 
-            // Version should match package.json
-            const packageJson = JSON.parse(
-                await readFile(join(TEST_ROOT, "package.json"), "utf-8"),
+            // Version should match the publishable CLI package (the build
+            // stamps marketplace/plugin versions from packages/cli, falling
+            // back to the workspace root when it is absent).
+            const cliManifestPath = join(
+                TEST_ROOT,
+                "packages",
+                "cli",
+                "package.json",
             );
-            expect(pluginJson.version).toBe(packageJson.version);
+            const rootManifestPath = join(TEST_ROOT, "package.json");
+            const versionSource = JSON.parse(
+                await readFile(
+                    existsSync(cliManifestPath)
+                        ? cliManifestPath
+                        : rootManifestPath,
+                    "utf-8",
+                ),
+            );
+            expect(pluginJson.version).toBe(versionSource.version);
         });
 
         it("should install Claude hook scripts", async () => {

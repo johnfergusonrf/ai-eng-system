@@ -315,7 +315,7 @@ describe("learning automation runtime safety", () => {
         await createPlugin(projectDir);
 
         expect(
-            existsSync(join(projectDir, ".opencode", "command", "ai-eng")),
+            existsSync(join(projectDir, ".opencode", "commands", "ai-eng")),
         ).toBe(true);
     });
 
@@ -337,7 +337,7 @@ describe("learning automation runtime safety", () => {
         await createPlugin(projectDir);
 
         expect(
-            existsSync(join(projectDir, ".opencode", "command", "ai-eng")),
+            existsSync(join(projectDir, ".opencode", "commands", "ai-eng")),
         ).toBe(true);
     });
 

@@ -10,7 +10,12 @@
         "noEmit": true,
         "types": ["bun-types"],
         "noImplicitAny": false,
-        "strictNullChecks": false
+        "strictNullChecks": false,
+        "paths": {
+            "@ai-eng-system/core": ["../core/src/index.ts"],
+            "@ai-eng-system/core/content": ["../core/src/content-loader.ts"],
+            "@ai-eng-system/core/paths": ["../core/src/paths.ts"]
+        }
     },
     "include": ["src/**/*.ts"],
     "exclude": ["node_modules", "dist"]

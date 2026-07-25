@@ -10,7 +10,18 @@
         "noEmit": true,
         "types": [
             "bun-types"
-        ]
+        ],
+        "paths": {
+            "@ai-eng-system/core": [
+                "./packages/core/src/index.ts"
+            ],
+            "@ai-eng-system/core/content": [
+                "./packages/core/src/content-loader.ts"
+            ],
+            "@ai-eng-system/core/paths": [
+                "./packages/core/src/paths.ts"
+            ]
+        }
     },
     "include": [
         "packages/cli/src/**/*.ts",
