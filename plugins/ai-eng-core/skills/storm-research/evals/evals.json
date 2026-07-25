@@ -1,0 +1,38 @@
+{
+  "skill_name": "storm-research",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Storm research: the environmental impact of large-scale battery storage.",
+      "expected_output": "A briefing produced through the four STORM phases: multi-perspective scan, contradiction map, synthesis, and peer review.",
+      "assertions": [
+        "The output reflects multiple distinct perspectives",
+        "Contradictions between perspectives are mapped",
+        "The output ends with a synthesized, reviewed briefing"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Storm research AI.",
+      "expected_output": "The skill narrows the topic to a researchable question before running the phases.",
+      "assertions": [
+        "The output scopes the topic into a specific question",
+        "The output does not skip the perspective-scan phase",
+        "The output is deeper than a single-prompt answer"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Storm research: should our company adopt a 4-day work week, considering productivity research, hiring market effects, and our support SLA constraints?",
+      "expected_output": "A PhD-level briefing covering each stated lens, with a contradiction map (e.g., productivity gains vs SLA coverage) and a synthesized recommendation.",
+      "assertions": [
+        "All three stated lenses are covered",
+        "The contradiction map identifies tensions between lenses",
+        "The synthesis grounds recommendations in the mapped evidence"
+      ]
+    }
+  ]
+}

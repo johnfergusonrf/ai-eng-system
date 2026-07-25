@@ -1,0 +1,38 @@
+{
+  "skill_name": "grill-with-docs",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Grill me on our caching strategy and capture the decisions in a CONTEXT.md.",
+      "expected_output": "One-question-at-a-time interrogation plus a CONTEXT.md or ADR-style document that records each resolved decision as it lands.",
+      "assertions": [
+        "The output produces or updates a persistent decision document",
+        "The document records decisions with rationale",
+        "Questioning continues until branches are resolved"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Let's do the grill-with-docs thing on the new project.",
+      "expected_output": "The skill asks which project/plan and where the document should live before starting.",
+      "assertions": [
+        "The output clarifies the subject and document location",
+        "The output does not fabricate project context",
+        "The output explains what will be persisted"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Grill me on a pricing-model change that touches billing, grandfathering, and sales comp, and keep an ADR updated as we resolve each area.",
+      "expected_output": "Sequential interrogation across the three domains with an ADR that accumulates dated, scoped decisions.",
+      "assertions": [
+        "The ADR separates decisions by domain",
+        "Cross-domain conflicts are surfaced during questioning",
+        "The document stays consistent as decisions accumulate"
+      ]
+    }
+  ]
+}

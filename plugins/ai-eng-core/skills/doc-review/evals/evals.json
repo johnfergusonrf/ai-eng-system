@@ -1,0 +1,38 @@
+{
+  "skill_name": "doc-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the doc-review skill to this design document: [a 2-page API design doc with an unclear error-handling section].",
+      "expected_output": "A structured review covering structure, clarity, and technical accuracy with concrete, located findings.",
+      "assertions": [
+        "The output is organized by review dimensions (structure, clarity, accuracy)",
+        "Findings cite specific sections or lines",
+        "Each finding includes a suggested fix"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Review this doc. [A document with no stated purpose or audience]",
+      "expected_output": "The skill flags the missing purpose/audience as a primary structural finding instead of guessing intent.",
+      "assertions": [
+        "The output identifies the missing purpose/audience",
+        "The output does not invent requirements the doc never states",
+        "The output remains actionable"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Review a 40-page architecture RFC that contradicts itself between the scaling section and the cost section.",
+      "expected_output": "The review surfaces the internal contradiction as a high-severity finding with both locations cited.",
+      "assertions": [
+        "The output detects the cross-section contradiction",
+        "The output prioritizes findings by severity",
+        "The output handles document length without losing specificity"
+      ]
+    }
+  ]
+}

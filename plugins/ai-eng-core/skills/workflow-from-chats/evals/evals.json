@@ -1,0 +1,38 @@
+{
+  "skill_name": "workflow-from-chats",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the workflow-from-chats skill: mine my recent Cursor chats and turn my repeated feedback into durable guidance.",
+      "expected_output": "Extracted working preferences converted into skills, rules, or workflow docs, each traceable to chat evidence.",
+      "assertions": [
+        "The output identifies repeated preferences (not one-off comments)",
+        "Each extracted preference cites supporting chat evidence",
+        "The output proposes a concrete artifact (skill, rule, or doc) per preference"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Learn my preferences.",
+      "expected_output": "The skill locates the chat source and states what it found before extracting, rather than inventing preferences.",
+      "assertions": [
+        "The output states the source of evidence",
+        "The output does not fabricate preferences",
+        "The output handles sparse or missing chat history gracefully"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Extract workflow preferences from 3 months of chats across 4 projects, where my feedback in the first month contradicts my current style.",
+      "expected_output": "A time-aware extraction that prefers recent patterns, flags the drift, and proposes updated guidance.",
+      "assertions": [
+        "The output weights recent evidence over stale patterns",
+        "Contradictions across time are surfaced",
+        "The output avoids duplicating guidance that already exists"
+      ]
+    }
+  ]
+}

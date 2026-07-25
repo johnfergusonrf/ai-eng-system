@@ -1,0 +1,38 @@
+{
+  "skill_name": "repurpose",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the repurpose skill: turn this 2,000-word blog post about our API rate-limiting design into a LinkedIn post.",
+      "expected_output": "A LinkedIn-appropriate adaptation that preserves the core insight while matching the channel's length, tone, and format conventions.",
+      "assertions": [
+        "The output fits LinkedIn format conventions",
+        "The core message survives the adaptation",
+        "The output is not a truncated copy of the original"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Repurpose this content.",
+      "expected_output": "The skill asks which channel/format to target rather than guessing.",
+      "assertions": [
+        "The output asks for the target channel or format",
+        "The output does not assume a channel",
+        "The output can offer a shortlist of candidate formats"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Repurpose our 45-minute webinar on SOC2 compliance into a blog post, 3 tweets, and a conference talk abstract.",
+      "expected_output": "Three distinct adaptations, each natively formatted for its channel, drawn from the same source material.",
+      "assertions": [
+        "Each output matches its channel's conventions",
+        "The adaptations emphasize different angles rather than repeating",
+        "Nothing contradicts the source material"
+      ]
+    }
+  ]
+}

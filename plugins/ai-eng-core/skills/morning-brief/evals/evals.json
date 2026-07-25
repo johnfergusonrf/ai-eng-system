@@ -1,0 +1,38 @@
+{
+  "skill_name": "morning-brief",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Give me my morning brief: calendar shows a 10am design review and 2pm 1:1; TODO.md has 3 open high-priority tasks.",
+      "expected_output": "A concise daily briefing synthesizing calendar events, tasks, and priorities in scannable form.",
+      "assertions": [
+        "The output covers calendar, tasks, and priorities",
+        "The output is short enough to scan in under a minute",
+        "The output highlights conflicts or tight scheduling"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Morning brief.",
+      "expected_output": "The skill gathers available sources (calendar, task files) and reports what it found and what sources were unavailable, rather than fabricating a schedule.",
+      "assertions": [
+        "The output does not invent meetings or tasks",
+        "The output states which sources were used",
+        "The output degrades gracefully when a source is missing"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Morning brief for a day with 6 meetings, 2 deadlines this week, and a TODO list with 15 items across 3 projects.",
+      "expected_output": "A prioritized brief that surfaces the deadlines and top tasks without dumping all 15 items.",
+      "assertions": [
+        "The output prioritizes rather than listing everything",
+        "Deadlines are prominent",
+        "The output groups or filters by project/priority"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "skill_name": "sync-skill-taxonomy",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the sync-skill-taxonomy skill to skills/: classify every skill as user-invoked or model-invoked and fix the frontmatter flags.",
+      "expected_output": "Every skill classified, with disable-model-invocation set on user-invoked skills and metadata.category injected on all.",
+      "assertions": [
+        "The output classifies each skill explicitly",
+        "User-invoked skills get disable-model-invocation: true",
+        "All skills receive metadata.category"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Sync the taxonomy, but I'm not sure which skills should be auto-loaded.",
+      "expected_output": "The skill applies its classification criteria (routing context vs explicit invocation) and reports borderline cases for decision instead of guessing silently.",
+      "assertions": [
+        "The output states the classification criteria it used",
+        "Borderline cases are surfaced explicitly",
+        "The output does not silently reclassify model-invoked skills"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Run sync-skill-taxonomy after a batch import added 30 new skills with no frontmatter conventions, some duplicates of existing skills.",
+      "expected_output": "Classification of all new skills plus duplicate detection, with a report of changes made.",
+      "assertions": [
+        "Duplicates are detected and flagged",
+        "New skills receive consistent frontmatter",
+        "The output includes an auditable change report"
+      ]
+    }
+  ]
+}

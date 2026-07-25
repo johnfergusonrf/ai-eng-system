@@ -1,0 +1,38 @@
+{
+  "skill_name": "docs-canvas",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Apply the docs-canvas skill: render a documentation canvas for our payments service covering architecture notes, the public API reference, and a getting-started walkthrough.",
+      "expected_output": "A navigable canvas layout with sections, a table of contents, and cross-references between architecture, API, and walkthrough content.",
+      "assertions": [
+        "The output defines distinct sections for each doc type",
+        "The output includes a table of contents or equivalent navigation",
+        "The output cross-references related sections"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Make a docs canvas for the repo.",
+      "expected_output": "The skill asks what content belongs on the canvas or inspects available docs and proposes a bounded layout rather than inventing content.",
+      "assertions": [
+        "The output does not fabricate API details",
+        "The output proposes a concrete section layout",
+        "The output states its assumptions"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Render a docs canvas for a monorepo with 6 packages, each with its own README, plus shared architecture decision records.",
+      "expected_output": "A multi-package canvas organization with per-package sections and a shared ADR section, with cross-links.",
+      "assertions": [
+        "The output handles multiple packages without flattening them",
+        "The output includes a shared/cross-cutting section for ADRs",
+        "The output remains navigable at scale"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "skill_name": "grill-me",
+  "evals": [
+    {
+      "id": 1,
+      "name": "basic-invocation",
+      "prompt": "Grill me on this plan: migrate our monolith to microservices over 6 months with a team of 4.",
+      "expected_output": "Relentless one-question-at-a-time interviewing that resolves each branch of the decision tree before moving on.",
+      "assertions": [
+        "The output asks focused questions rather than giving advice",
+        "Questions target unresolved decisions in the plan",
+        "The skill does not accept vague answers without follow-up"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "ambiguous-input",
+      "prompt": "Grill me on my design.",
+      "expected_output": "The skill first asks which design or asks the user to present it, rather than fabricating a design to interrogate.",
+      "assertions": [
+        "The output requests the artifact under review",
+        "The output does not invent design details",
+        "The output stays in interviewer mode"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "complex-scenario",
+      "prompt": "Grill me on a multi-region failover design where I've already decided on active-active but haven't thought about data residency.",
+      "expected_output": "The questioning exposes the unexamined data-residency branch and its interaction with the active-active decision.",
+      "assertions": [
+        "The output probes the unstated data-residency assumptions",
+        "The output tests consistency between stated decisions",
+        "The output tracks which branches are resolved vs open"
+      ]
+    }
+  ]
+}
