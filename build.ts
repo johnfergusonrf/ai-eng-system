@@ -940,9 +940,9 @@ function renderCodexAgentToml(
     if (CODEX_READ_ONLY_AGENTS.has(name)) {
         lines.push(`sandbox_mode = "read-only"`);
     }
-    lines.push(`developer_instructions = """`);
-    lines.push(instructions);
-    lines.push(`"""`);
+    // JSON string syntax is compatible with TOML basic strings and safely
+    // escapes quotes, backslashes, newlines, and control characters.
+    lines.push(`developer_instructions = ${JSON.stringify(instructions)}`);
     return { name, toml: lines.join("\n") + "\n" };
 }
 
@@ -1011,8 +1011,23 @@ async function validateCodexOutput(
     const codexAgentsDir = join(DIST_CODEX_DIR, "agents");
     if (!existsSync(codexAgentsDir)) {
         errors.push("Codex output missing .codex/agents/");
-    } else if (agentCount === 0) {
-        errors.push("Codex output has no agents");
+    } else {
+        if (agentCount === 0) errors.push("Codex output has no agents");
+
+        const entries = await readdir(codexAgentsDir, {
+            withFileTypes: true,
+        });
+        for (const entry of entries) {
+            if (!entry.isFile() || !entry.name.endsWith(".toml")) continue;
+            const agentPath = join(codexAgentsDir, entry.name);
+            try {
+                Bun.TOML.parse(await readFile(agentPath, "utf-8"));
+            } catch (error) {
+                const message =
+                    error instanceof Error ? error.message : String(error);
+                errors.push(`${agentPath}: invalid TOML: ${message}`);
+            }
+        }
     }
     const sharedSkillsDir = join(DIST_AGENTS_DIR, "skills");
     if (!existsSync(sharedSkillsDir)) {

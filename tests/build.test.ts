@@ -94,6 +94,23 @@ This is a test agent body with comprehensive details.
 - Test behavior 2
 `;
 
+const TOML_EDGE_CASE_AGENT = `---
+name: toml-edge-case-agent
+description: Exercises TOML-sensitive instruction content
+mode: subagent
+---
+
+# TOML Edge Cases
+
+\`\`\`python
+def extract_orders():
+    """Extract orders from source database."""
+\`\`\`
+
+Package glob: requirements.\\*
+Regex: /\\$(\\w+)/
+`;
+
 const SAMPLE_SKILL = `---
 name: test-skill
 description: A test skill for validation
@@ -428,6 +445,40 @@ Missing description field.
     });
 
     describe("Build Process", () => {
+        it("should serialize TOML-sensitive Codex agent instructions", async () => {
+            const agentPath = join(
+                CONTENT_DIR,
+                "agents",
+                "toml-edge-case-agent.md",
+            );
+            await writeFile(agentPath, TOML_EDGE_CASE_AGENT);
+
+            try {
+                await runBuild();
+
+                const generated = await readFile(
+                    join(
+                        DIST_DIR,
+                        ".codex",
+                        "agents",
+                        "toml-edge-case-agent.toml",
+                    ),
+                    "utf-8",
+                );
+                const parsed = Bun.TOML.parse(generated) as Record<
+                    string,
+                    unknown
+                >;
+
+                expect(parsed.name).toBe("toml-edge-case-agent");
+                expect(parsed.developer_instructions).toBe(
+                    TOML_EDGE_CASE_AGENT.split("---\n").at(-1)?.trim(),
+                );
+            } finally {
+                await rm(agentPath, { force: true });
+            }
+        });
+
         it("should build Claude Code plugin structure", async () => {
             // Run build process in test directory
             await runBuild();
